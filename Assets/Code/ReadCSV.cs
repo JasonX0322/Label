@@ -10,11 +10,12 @@ public class ReadCSV : MonoBehaviour
 {
     DataTable dtPersonalityPool;
     DataTable dtAppearancePool;
-    DataTable dtInternalPool;
-    DataTable dtLabelDetail;
+    DataTable dtInternalityPool;
 
     DataTable dtField;
     DataTable dtEnemy;
+    DataTable dtFood;
+    DataTable dtObstacle;
     public static ReadCSV I;
 
     void Awake()
@@ -31,30 +32,68 @@ public class ReadCSV : MonoBehaviour
         string personalityPath = Application.streamingAssetsPath + "/personalityPool.csv";
         string appearancePath = Application.streamingAssetsPath + "/appearancePool.csv";
         string internalPath = Application.streamingAssetsPath + "/internalPool.csv";
-        string labelDetailPath = Application.streamingAssetsPath + "/labelDetail.csv";
         dtPersonalityPool = OpenCSV(personalityPath);
         dtAppearancePool = OpenCSV(appearancePath);
-        dtInternalPool = OpenCSV(internalPath);
-        dtLabelDetail = OpenCSV(labelDetailPath);
+        dtInternalityPool = OpenCSV(internalPath);
     }
 
     public void LoadBattleCSV(string battleName)
     {
-        string fieldPath = Application.streamingAssetsPath + "/" + battleName + "_field" + ".csv";
-        string enemyPath = Application.streamingAssetsPath + "/" + battleName + "_enemy" + ".csv";
+        string fieldPath = Application.streamingAssetsPath + "/" + battleName + "/field" + ".csv";
+        string enemyPath = Application.streamingAssetsPath + "/" + battleName + "/enemy" + ".csv";
+        string foodPath = Application.streamingAssetsPath + "/" + battleName + "/food" + ".csv";
+        string obstaclePath = Application.streamingAssetsPath + "/" + battleName + "/obstacle" + ".csv";
         dtField = OpenCSV(fieldPath);
         dtEnemy = OpenCSV(enemyPath);
+        dtFood = OpenCSV(foodPath);
+        dtObstacle = OpenCSV(obstaclePath);
 
+        Debug.LogWarning(dtField.Rows[0][0]);
     }
 
-    public string GetEnemyElement(int row,int col)
+    public string GetEnemyElement(int row,string attribute)
     {
-        return dtEnemy.Rows[row][col].ToString();
+        return dtEnemy.Rows[row][attribute].ToString();
+    }
+
+    public string GetObstacleElement(int row, string attribute)
+    {
+        return dtEnemy.Rows[row][attribute].ToString();
+    }
+    public string GetFoodElement(int row, string attribute)
+    {
+        return dtFood.Rows[row][attribute].ToString();
     }
 
     public string GetFieldElement(int row,int col)
     {
         return dtField.Rows[row][col].ToString();
+    }
+
+    public int GetPersonalityCount()
+    {
+        return dtPersonalityPool.Rows.Count;
+    }
+    public int GetAppearanceCount()
+    {
+        return dtAppearancePool.Rows.Count;
+    }
+    public int GetInternalityCount()
+    {
+        return dtInternalityPool.Rows.Count;
+    }
+
+    public string GetPersonalityElement(int row, string attribute)
+    {
+        return dtPersonalityPool.Rows[row][attribute].ToString();
+    }
+    public string GetAppearanceElement(int row, string attribute)
+    {
+        return dtAppearancePool.Rows[row][attribute].ToString();
+    }
+    public string GetInternalityElement(int row, string attribute)
+    {
+        return dtInternalityPool.Rows[row][attribute].ToString();
     }
     /// <summary>
     /// 从csv读取数据返回table

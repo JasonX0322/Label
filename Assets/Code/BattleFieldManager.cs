@@ -1,6 +1,7 @@
 ﻿using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,11 +9,15 @@ public class BattleFieldManager : MonoBehaviour
 {
     int nFieldWidth;
     int nFieldDepth;
+    string fieldNow;
+
+    List<GameObject> listCard;
 
     public static BattleFieldManager I;
 
     void Awake()
     {
+        listCard = new List<GameObject>();
         I = this;
     }
 
@@ -32,6 +37,8 @@ public class BattleFieldManager : MonoBehaviour
         nWidthNow = 0;
         nFieldWidth = fieldWidth;
         nFieldDepth = fieldDepth;
+        listCard.Clear();
+        fieldNow = battleName;
 
         ReadCSV.I.LoadBattleCSV(battleName);
     }
@@ -41,26 +48,44 @@ public class BattleFieldManager : MonoBehaviour
 
     public void AddCard(GameObject card)
     {
+        Debug.Log("width"+nWidthNow);
+        Debug.Log("depth" + nDepthNow);
+        listCard.Add(card);
         card.transform.SetParent(transform);
-        string myType = ReadCSV.I.GetFieldElement(nDepthNow, nWidthNow).Split('/')[0];
-        if(myType == "enemy")
+        string element = ReadCSV.I.GetFieldElement(nDepthNow, nWidthNow);
+        Debug.Log(element);
+        string cardType = element.Split('_')[0];
+        int cardIndex = int.Parse(element.Split('_')[1]);
+        if(cardType == "enemy")
         {
             card.AddComponent<Card_Enemy>();
         }
-        card.GetComponent<Card_Enemy>().InitEnemy(nDepthNow, nWidthNow);
+        if (cardType == "food")
+        {
+            card.AddComponent<Card_Food>();
+        }
+        if (cardType == "obstacle")
+        {
+            card.AddComponent<Card_Obstacle>();
+        }
+        card.GetComponent<Card>().InitCard(cardIndex);
         float fIntervalX = (Screen.width - 200) / (nFieldWidth - 1 + 2);
         float fStartPosX = -Screen.width / 2 + fIntervalX + 100;
-        Vector3 targetPos = new Vector3((fStartPosX + nWidthNow * fIntervalX) * (1.0f - 0.1f * nDepthNow), -Screen.height / 2 + 200+100*nDepthNow, 0);
+        bool interactable = (nDepthNow == 0);
+        Vector3 targetPos = new Vector3((fStartPosX + nWidthNow * fIntervalX) * (1.0f - 0.1f * nDepthNow), -Screen.height / 2 + 200 + 100 * nDepthNow, 0);
         float targetScale = Mathf.Clamp01(1.0f - 0.1f * nDepthNow);
         float taegetAlpha = Mathf.Clamp01(1.0f - 0.2f * nDepthNow);
-        card.GetComponent<Card>().MoveTo(targetPos, targetScale, taegetAlpha);
+        card.GetComponent<Card>().MoveTo(targetPos, targetScale, taegetAlpha,interactable);
         nWidthNow++;
-        Debug.Log("width"+nWidthNow);
         if (nWidthNow >= nFieldWidth)
         {
             nDepthNow++;
             nWidthNow = 0;
-            Debug.Log("depth"+nDepthNow);
         }
+    }
+
+    public string GetFieldNow()
+    {
+        return fieldNow;
     }
 }

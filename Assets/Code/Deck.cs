@@ -146,7 +146,7 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
         interactable = false;
         foreach (var item in imgDeckCard)
         {
-            item.DOFade(0, 0.5f);
+            item.DOFade(0, 0.5f).OnComplete(() => item.enabled = false) ;
         }
     }
     /// <summary>
@@ -166,6 +166,7 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
     /// </summary>
     void License()
     {
+        Debug.Log("License");
         StartCoroutine(ienuLicense());
     }
 

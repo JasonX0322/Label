@@ -28,7 +28,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NowTex:
-        m_Texture: {fileID: 2800000, guid: 236fbeeea2d92ce4d9cf68c5d61c481e, type: 3}
+        m_Texture: {fileID: 2800000, guid: f6deed6b8e2876a479fa5350deba72b0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _texcoord:
