@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [SerializeField] Image imgCard;
-    [SerializeField] Image imgOutline;
+    public Image imgOutline;
     Material matCard;
 
     bool interactable = true;
@@ -86,6 +86,11 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
         interactable = b;
     }
 
-
+    public void HideCard()
+    {
+        interactable = false;
+        if (imgCard.color.a != 0)
+            imgCard.DOFade(0, 0.1f);
+    }
 
 }

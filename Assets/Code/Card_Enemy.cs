@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class Card_Enemy : Card
@@ -122,5 +123,16 @@ public class Card_Enemy : Card
     public override void ClickEvent()
     {
         Debug.Log("ClickEvent");
+
+        BattleFieldManager.I.ExitBattleField(this.gameObject);
+
+        MoveTo(new Vector3(900, 400, 0), 1, 1, false);
+
+        LabelMaster labelMaster = this.gameObject.AddComponent<LabelMaster>();
+
+        GameObject dataPage = BattleFieldManager.I.GetEnemyDataPage();
+
+        labelMaster.SetMaster(dataPage, imgOutline);
+        labelMaster.InitMaster();
     }
 }

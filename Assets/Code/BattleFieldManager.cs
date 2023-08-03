@@ -15,6 +15,9 @@ public class BattleFieldManager : MonoBehaviour
 
     public static BattleFieldManager I;
 
+    [SerializeField] LabelMaster playerMaster;
+    [SerializeField] GameObject enemyDataPage;
+
     void Awake()
     {
         listCard = new List<GameObject>();
@@ -24,7 +27,7 @@ public class BattleFieldManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        playerMaster.InitMaster();
     }
 
     /// <summary>
@@ -45,7 +48,10 @@ public class BattleFieldManager : MonoBehaviour
 
     int nDepthNow;
     int nWidthNow;
-
+    /// <summary>
+    /// 生成牌，移动牌
+    /// </summary>
+    /// <param name="card"></param>
     public void AddCard(GameObject card)
     {
         Debug.Log("width"+nWidthNow);
@@ -87,5 +93,20 @@ public class BattleFieldManager : MonoBehaviour
     public string GetFieldNow()
     {
         return fieldNow;
+    }
+
+    public void ExitBattleField(GameObject exception)
+    {
+        for (int i = 0; i < listCard.Count; i++)
+        {
+            if (listCard[i] == exception)
+                continue;
+            listCard[i].GetComponent<Card>().HideCard();
+        }
+    }
+
+    public GameObject GetEnemyDataPage()
+    {
+        return enemyDataPage;
     }
 }
