@@ -17,6 +17,7 @@ public class BattleFieldManager : MonoBehaviour
 
     [SerializeField] LabelMaster playerMaster;
     [SerializeField] GameObject enemyDataPage;
+    [SerializeField] Transform tOverAll;
 
     void Awake()
     {
@@ -27,7 +28,9 @@ public class BattleFieldManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playerMaster.InitMaster();
+        string[] arrayName = new string[1] { "邪兽" };
+        string[] arrayIntro = new string[1] { "吞天食地，只进不出" };
+        playerMaster.InitMaster(arrayName, arrayIntro);
     }
 
     /// <summary>
@@ -108,5 +111,10 @@ public class BattleFieldManager : MonoBehaviour
     public GameObject GetEnemyDataPage()
     {
         return enemyDataPage;
+    }
+
+    public Transform GetOverAll()
+    {
+        return tOverAll;
     }
 }

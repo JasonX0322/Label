@@ -25,6 +25,8 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
 
     bool interactable = true;
 
+    public bool tempClose;
+
     [SerializeField] Object objCard;
 
     [SerializeField] int nFieldWidth;
@@ -75,7 +77,7 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (!interactable)
+        if (!interactable||tempClose)
             return;
         Debug.Log("enter");
         HightLightCards();
@@ -98,7 +100,7 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (!interactable)
+        if (!interactable|| tempClose)
             return;
         Debug.Log("exit");
         UnHighLightCards();
@@ -121,7 +123,7 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (!interactable)
+        if (!interactable|| tempClose)
             return;
         mat.DOFloat(0, "_OpacityNow", 2).OnComplete(()=> License());
 

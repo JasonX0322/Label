@@ -12,7 +12,7 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     public Image imgOutline;
     Material matCard;
 
-    bool interactable = true;
+    public bool interactable = true;
     // Start is called before the first frame update
     void Awake()
     {

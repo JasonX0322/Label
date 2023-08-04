@@ -9,47 +9,49 @@ public class LabelMaster : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     [SerializeField] GameObject goDataPage;
     [SerializeField] Image imgOutline;
 
-    bool bPageOpened;
+    bool bLocked = false;
     // Start is called before the first frame update
     void Start()
     {
     }
 
-    public void InitMaster()
+    public void InitMaster(string[] labelName, string[] labelIntro)
     {
-        goDataPage.GetComponent<DataPage>().AddLabel("邪兽", "吞天食地，只进不出");
+        if (labelName.Length != labelIntro.Length)
+            Debug.LogError("标签数量有误");
+        for(int i = 0; i < labelName.Length; i++)
+        {
+            goDataPage.GetComponent<DataPage>().AddLabel(labelName[i], labelIntro[i]);
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        if (bLocked)
+            return;
         Debug.Log("enter"+name);
         imgOutline.enabled = true;
+        goDataPage.GetComponent<DataPage>().OpenPage();
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        if (bLocked)
+            return;
         Debug.Log("exit"+name);
         imgOutline.enabled = false;
+        goDataPage.GetComponent<DataPage>().ClosePage();
     }
     public void OnPointerClick(PointerEventData eventData)
     {
         Debug.Log("click" + name);
-        if(!bPageOpened)
-        {
-            bPageOpened = true;
-            goDataPage.GetComponent<DataPage>().OpenPage();
-        }
-        else
-        {
-            bPageOpened = false;
-            goDataPage.GetComponent<DataPage>().ClosePage();
-
-        }
+        bLocked = !bLocked;
     }
 
     public void SetMaster(GameObject page,Image outline)
     {
         goDataPage = page;
         imgOutline = outline;
+        goDataPage.GetComponent<DataPage>().SetPage(this.gameObject);
     }
 }

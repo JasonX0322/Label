@@ -98,4 +98,9 @@ public class DataPage : MonoBehaviour
         }
 
     }
+
+    public void SetPage(GameObject master)
+    {
+        goMaster = master;
+    }
 }

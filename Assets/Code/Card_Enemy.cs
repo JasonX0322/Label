@@ -1,6 +1,9 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.SceneManagement;
+using UnityEditorInternal.VersionControl;
 using UnityEngine;
 
 public class Card_Enemy : Card
@@ -10,7 +13,7 @@ public class Card_Enemy : Card
         public string name;
         public int[] personalityPool;
         public int[] appearancePool;
-        public int[] internality;
+        public int[] internalityPool;
     }
 
     enum PoolType
@@ -21,6 +24,9 @@ public class Card_Enemy : Card
     }
 
     rawEnemy myRawEnemy;
+
+    int maxHealth=100;
+    int actPoint=1;
 
     void Start()
     {
@@ -117,22 +123,64 @@ public class Card_Enemy : Card
         else if(targetPool == PoolType.appearance)
             myRawEnemy.appearancePool = nSplitPool;
         else if (targetPool == PoolType.internality)
-            myRawEnemy.internality = nSplitPool;
+            myRawEnemy.internalityPool = nSplitPool;
     }
 
+    /// <summary>
+    /// 点击事件 进入战斗
+    /// </summary>
     public override void ClickEvent()
     {
         Debug.Log("ClickEvent");
 
         BattleFieldManager.I.ExitBattleField(this.gameObject);
 
-        MoveTo(new Vector3(900, 400, 0), 1, 1, false);
+        Sequence sequence = DOTween.Sequence();
+        sequence.Append(transform.DOLocalMove(new Vector3(900, 400, 0), 1));
+        sequence.Insert(0, transform.DOScale(1.5f, 0.5f));
+        sequence.Insert(0.5f, transform.DOScale(1, 0.5f).SetEase(Ease.OutSine));
+        sequence.OnComplete(() =>
+        {
+            BindLabelPage();
+        });
+        interactable = false;
+        //MoveTo(new Vector3(900, 400, 0), 1, 1, false);
 
+
+    }
+
+    void BindLabelPage()
+    {
         LabelMaster labelMaster = this.gameObject.AddComponent<LabelMaster>();
-
+        Transform overall = BattleFieldManager.I.GetOverAll();
         GameObject dataPage = BattleFieldManager.I.GetEnemyDataPage();
-
         labelMaster.SetMaster(dataPage, imgOutline);
-        labelMaster.InitMaster();
+        transform.SetParent(overall);
+        int countAll = myRawEnemy.personalityPool.Count() + myRawEnemy.appearancePool.Count() + myRawEnemy.internalityPool.Count();
+        string[] arrayName = new string[countAll];
+        string[] arrayIntro = new string[countAll];
+        int startIndex = 0;
+        for (int i = 0; i < myRawEnemy.personalityPool.Count(); i++)
+        {
+            Debug.Log("personality" + i);
+            Debug.Log(myRawEnemy.personalityPool[i]);
+            arrayName[i + startIndex] = ReadCSV.I.GetPersonalityElement(myRawEnemy.personalityPool[i], "name");
+            arrayName[i + startIndex] = ReadCSV.I.GetPersonalityElement(myRawEnemy.personalityPool[i], "intro");
+        }
+        startIndex = myRawEnemy.personalityPool.Count();
+        for (int i = 0; i < myRawEnemy.appearancePool.Count(); i++)
+        {
+            Debug.Log("appearance" + i);
+            Debug.Log(myRawEnemy.appearancePool[i]);
+            arrayName[i + startIndex] = ReadCSV.I.GetAppearanceElement(myRawEnemy.appearancePool[i], "name");
+            arrayName[i + startIndex] = ReadCSV.I.GetAppearanceElement(myRawEnemy.appearancePool[i], "intro");
+        }
+        startIndex = myRawEnemy.personalityPool.Count() + myRawEnemy.appearancePool.Count();
+        for (int i = 0; i < myRawEnemy.internalityPool.Count(); i++)
+        {
+            arrayName[i] = ReadCSV.I.GetInternalityElement(myRawEnemy.internalityPool[i], "name");
+            arrayName[i] = ReadCSV.I.GetInternalityElement(myRawEnemy.internalityPool[i], "intro");
+        }
+        labelMaster.InitMaster(arrayName, arrayIntro);
     }
 }
