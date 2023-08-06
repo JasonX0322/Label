@@ -20,6 +20,7 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
 
 
     [SerializeField] Deck[] allDecks;
+    [SerializeField] AudioClip myBGM;
 
     Material mat;
 
@@ -96,6 +97,7 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
         {
             item.SetActive(true);
         }
+        GetComponent<AudioSource>().Play();
     }
 
     public void OnPointerExit(PointerEventData eventData)
@@ -138,6 +140,7 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
 
         interactable = false;
         UnHighLightCards();
+        AudioManager.I.SwitchBGM(myBGM);
     }
 
     /// <summary>

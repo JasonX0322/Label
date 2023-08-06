@@ -136,7 +136,7 @@ public class Card_Enemy : Card
         BattleFieldManager.I.ExitBattleField(this.gameObject);
 
         Sequence sequence = DOTween.Sequence();
-        sequence.Append(transform.DOLocalMove(new Vector3(900, 400, 0), 1));
+        sequence.Append(transform.DOLocalMove(new Vector3(850, 370, 0), 1));
         sequence.Insert(0, transform.DOScale(1.5f, 0.5f));
         sequence.Insert(0.5f, transform.DOScale(1, 0.5f).SetEase(Ease.OutSine));
         sequence.OnComplete(() =>

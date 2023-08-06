@@ -51,7 +51,7 @@ public class DataPage : MonoBehaviour
         goLabel.transform.SetParent(tLabelParent);
         goLabel.transform.localScale = Vector3.zero;
         goLabel.transform.localPosition = Vector3.zero;
-        goLabel.GetComponent<Label>().InitLabel(name, intro);
+        goLabel.GetComponent<Tag>().InitLabel(name, intro);
         lLael.Add(goLabel);
 
         GameObject goLine = Instantiate(objLine) as GameObject;

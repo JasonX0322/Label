@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Label : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class Tag : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     string labelName;
     string labelIntro;
@@ -30,11 +30,13 @@ public class Label : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         Debug.Log("enter" + name);
         goIntroBlock.SetActive(true);
+        goIntroBlock.transform.SetParent(BattleFieldManager.I.GetOverAll());
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         Debug.Log("exit" + name);
         goIntroBlock.SetActive(false);
+        goIntroBlock.transform.SetParent(transform);
     }
 }
