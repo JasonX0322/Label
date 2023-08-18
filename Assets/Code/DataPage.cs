@@ -10,10 +10,10 @@ public class DataPage : MonoBehaviour
     [SerializeField] Vector2[] defaultPos;
 
 
-    [SerializeField]Object objLabel;
-    [SerializeField]Object objLine;
+    Object objTag;
+    Object objLine;
 
-    List<GameObject> lLael;
+    List<GameObject> lTag;
     List<GameObject> lLine;
 
     [SerializeField] GameObject goMaster;
@@ -24,10 +24,11 @@ public class DataPage : MonoBehaviour
 
     void Awake()
     {
-
-        if (lLael == null)
+        objTag = Resources.Load("prefab/Tag");
+        objLine = Resources.Load("prefab/Line");
+        if (lTag == null)
         {
-            lLael = new List<GameObject>();
+            lTag = new List<GameObject>();
             lLine = new List<GameObject>();
             listSequence = new List<Sequence>();
         }
@@ -41,35 +42,35 @@ public class DataPage : MonoBehaviour
 
     public void AddLabel(string name,string intro)
     {
-        if(lLael==null)
+        if(lTag==null)
         {
-            lLael = new List<GameObject>();
+            lTag = new List<GameObject>();
             lLine = new List<GameObject>();
             listSequence=new List<Sequence>();
         }
-        GameObject goLabel = Instantiate(objLabel) as GameObject;
+        GameObject goLabel = Instantiate(objTag) as GameObject;
         goLabel.transform.SetParent(tLabelParent);
         goLabel.transform.localScale = Vector3.zero;
         goLabel.transform.localPosition = Vector3.zero;
         goLabel.GetComponent<Tag>().InitLabel(name, intro);
-        lLael.Add(goLabel);
+        lTag.Add(goLabel);
 
         GameObject goLine = Instantiate(objLine) as GameObject;
         goLine.transform.SetParent(tLineParent);
-        goLine.GetComponent<Line>().InitLine(goMaster, lLael[lLael.Count - 1]);
+        goLine.GetComponent<Line>().InitLine(goMaster, lTag[lTag.Count - 1]);
         lLine.Add(goLine);
 
 
         Sequence sequence = DOTween.Sequence();
-        sequence.Append(lLael[listSequence.Count].transform.DOScale(1, 1).SetAutoKill(false));
-        sequence.Join(lLael[listSequence.Count].transform.DOLocalMove(defaultPos[listSequence.Count], 1).SetAutoKill(false));
+        sequence.Append(lTag[listSequence.Count].transform.DOScale(1, 1).SetAutoKill(false));
+        sequence.Join(lTag[listSequence.Count].transform.DOLocalMove(defaultPos[listSequence.Count], 1).SetAutoKill(false));
         sequence.SetAutoKill(false);
         listSequence.Add(sequence);
     }
 
     public void OpenPage()
     {
-        for (int i = 0; i < lLael.Count; i++)
+        for (int i = 0; i < lTag.Count; i++)
         {
             listSequence[i].Restart();
         }
@@ -81,11 +82,11 @@ public class DataPage : MonoBehaviour
 
     public void ClosePage()
     {
-        for (int i = 0; i < lLael.Count; i++)
+        for (int i = 0; i < lTag.Count; i++)
         {
             //listSequence[i].Pause();
-            lLael[i].transform.localScale = Vector3.zero;
-            lLael[i].transform.localPosition = Vector3.zero;
+            lTag[i].transform.localScale = Vector3.zero;
+            lTag[i].transform.localPosition = Vector3.zero;
         }
 
         for (int i = 0; i < lLine.Count; i++)

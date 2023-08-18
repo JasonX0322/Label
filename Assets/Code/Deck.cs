@@ -28,13 +28,14 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
 
     public bool tempClose;
 
-    [SerializeField] Object objCard;
+    Object objCard;
 
     [SerializeField] int nFieldWidth;
     [SerializeField] int nFieldDepth;
     [SerializeField] string strFieldName;
     void Awake()
     {
+        objCard = Resources.Load("prefab/Card");
         goDeckCard=new GameObject[nFieldDepth + 1];
         for(int i= 0; i < goTotalDeckCard.Length; i++)
         {

@@ -5,6 +5,13 @@ using UnityEngine;
 public class EnemyAI : MonoBehaviour
 {
     public static EnemyAI I;
+    [SerializeField] ActionContainer enemyActionContainer;
+
+    int actPointNow;
+
+    EnemyFinish finishEvent;
+
+    Card_Enemy.rawEnemy myRawEnemy;
 
     void Awake()
     {
@@ -17,8 +24,31 @@ public class EnemyAI : MonoBehaviour
         
     }
 
-    public void ChooseAction(EnemyFinish enemyFinish)
+    public void SetRawEnemy(Card_Enemy.rawEnemy raw)
     {
-        enemyFinish();
+        myRawEnemy = raw;
+    }
+
+    public void ChooseAllAction(EnemyFinish enemyFinish)
+    {
+        Debug.Log("ChooseAll");
+        actPointNow = myRawEnemy.actPoint;
+        finishEvent = enemyFinish;
+        ChooseAction();
+    }
+
+    int _index;
+    public void ChooseAction()
+    {
+        Debug.Log("ChooseAct      "+actPointNow);
+        actPointNow--;
+        if (actPointNow < 0)
+        {
+            Debug.Log("ChooseFinish");
+            finishEvent();
+            return;
+        }
+
+        enemyActionContainer.ChooseAction(_index++);
     }
 }

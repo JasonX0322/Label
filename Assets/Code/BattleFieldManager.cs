@@ -57,12 +57,12 @@ public class BattleFieldManager : MonoBehaviour
     /// <param name="card"></param>
     public void AddCard(GameObject card)
     {
-        Debug.Log("width"+nWidthNow);
-        Debug.Log("depth" + nDepthNow);
+        //Debug.Log("width"+nWidthNow);
+        //Debug.Log("depth" + nDepthNow);
         listCard.Add(card);
         card.transform.SetParent(transform);
         string element = ReadCSV.I.GetFieldElement(nDepthNow, nWidthNow);
-        Debug.Log(element);
+        //Debug.Log(element);
         string cardType = element.Split('_')[0];
         int cardIndex = int.Parse(element.Split('_')[1]);
         if(cardType == "enemy")

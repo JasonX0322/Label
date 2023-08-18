@@ -13,9 +13,11 @@ public class BattleManager : MonoBehaviour
     [SerializeField] GameObject battlePanel;
     [SerializeField] Button btnSelectFinish;
 
-    Card_Enemy enemy;
+    Card_Enemy.rawEnemy rawEnemyNow;
 
     battleState stateNow;
+
+    public static BattleManager I;
 
     enum battleState
     {
@@ -25,15 +27,25 @@ public class BattleManager : MonoBehaviour
         determination
     }
 
+    void Awake()
+    {
+        I = this;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
     }
 
-    public void StartBattle()
+    public void StartBattle(Card_Enemy.rawEnemy rawEnemy)
     {
+        Debug.Log("StartBattle");
+        rawEnemyNow = rawEnemy;
         stateNow = battleState.license;
         battlePanel.SetActive(true);
+        enemyContainer.UpdateActionContainer();
+        playerContainer.UpdateActionContainer();
+        EnemyAI.I.SetRawEnemy(rawEnemyNow);
         enemyContainer.FillContainer();
         playerContainer.FillContainer(() =>
         {
@@ -41,41 +53,42 @@ public class BattleManager : MonoBehaviour
         });
     }
 
-
+    /// <summary>
+    /// 敌方选择
+    /// </summary>
     void EnemyAct()
     {
+        Debug.Log("EnemyAct");
         stateNow = battleState.enemyTurn;
-        EnemyAI.I.ChooseAction(() =>
+        EnemyAI.I.ChooseAllAction(() =>
         {
             PlayerAct();
         });
     }
-
+    /// <summary>
+    /// 玩家选择
+    /// </summary>
     void PlayerAct()
     {
+        Debug.Log("PlayerAct");
         stateNow = battleState.playerTurn;
         btnSelectFinish.interactable=true;
         playerContainer.UnlockActions();
     }
     /// <summary>
-    /// 按钮事件,回合结束
+    /// 按钮事件,双方选择结束
     /// </summary>
     public void PlayerSelectFinish()
     {
         stateNow = battleState.determination;
         btnSelectFinish.interactable = false;
         playerContainer.LockActions();
-
-
     }
 
-
-    public void SetEnemy(Card_Enemy _enemy)
+    public Card_Enemy.rawEnemy GetRawEnemyNow()
     {
-        enemy = _enemy;
+        return rawEnemyNow;
     }
-
-
 
 
 }

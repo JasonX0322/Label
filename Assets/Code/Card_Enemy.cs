@@ -14,6 +14,9 @@ public class Card_Enemy : Card
         public int[] personalityPool;
         public int[] appearancePool;
         public int[] internalityPool;
+        public int actPoint;
+        public int atk;
+        public int health;
     }
 
     enum PoolType
@@ -37,6 +40,7 @@ public class Card_Enemy : Card
         enemyIndex--;
         //Debug.Log(enemyIndex);
         myRawEnemy.name = ReadCSV.I.GetEnemyElement(enemyIndex, "name");
+        myRawEnemy.actPoint = 1;//TODO
         //Debug.Log(myRawEnemy.name);
         SetPool(enemyIndex,PoolType.personality);
         SetPool(enemyIndex,PoolType.appearance);
@@ -142,11 +146,9 @@ public class Card_Enemy : Card
         sequence.OnComplete(() =>
         {
             BindLabelPage();
+            BattleManager.I.StartBattle(myRawEnemy);
         });
         interactable = false;
-        //MoveTo(new Vector3(900, 400, 0), 1, 1, false);
-
-
     }
 
     void BindLabelPage()
@@ -162,16 +164,16 @@ public class Card_Enemy : Card
         int startIndex = 0;
         for (int i = 0; i < myRawEnemy.personalityPool.Count(); i++)
         {
-            Debug.Log("personality" + i);
-            Debug.Log(myRawEnemy.personalityPool[i]);
+            //Debug.Log("personality" + i);
+            //Debug.Log(myRawEnemy.personalityPool[i]);
             arrayName[i + startIndex] = ReadCSV.I.GetPersonalityElement(myRawEnemy.personalityPool[i], "name");
             arrayName[i + startIndex] = ReadCSV.I.GetPersonalityElement(myRawEnemy.personalityPool[i], "intro");
         }
         startIndex = myRawEnemy.personalityPool.Count();
         for (int i = 0; i < myRawEnemy.appearancePool.Count(); i++)
         {
-            Debug.Log("appearance" + i);
-            Debug.Log(myRawEnemy.appearancePool[i]);
+            //Debug.Log("appearance" + i);
+            //Debug.Log(myRawEnemy.appearancePool[i]);
             arrayName[i + startIndex] = ReadCSV.I.GetAppearanceElement(myRawEnemy.appearancePool[i], "name");
             arrayName[i + startIndex] = ReadCSV.I.GetAppearanceElement(myRawEnemy.appearancePool[i], "intro");
         }
