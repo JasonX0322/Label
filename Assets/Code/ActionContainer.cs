@@ -6,25 +6,39 @@ using UnityEngine;
 public class ActionContainer : MonoBehaviour
 {
     public delegate void LicenseFinish();
-    [SerializeField] GameObject[] lActionem;
+    [SerializeField]
+    GameObject[] lActionem;
+    [SerializeField]
+    GameObject[] lActionDeck;
+    Queue<GameObject> qActionDeck;
+    GameObject[] lActionHand;
     [SerializeField] float lDefaultActPosY;
-    [SerializeField] Vector3 chosenPosLeft;
+    [SerializeField]
+    Transform[] defaultHandPos;
+    //[SerializeField] Vector3 chosenPosLeft;
+    [SerializeField] Transform[] myBlocks;
 
     Sequence sequenceFillcontainer;
 
-    [SerializeField] float fActInterval;
+    //[SerializeField] float fActInterval;
 
     GameObject[] chosenAct;
 
     // Start is called before the first frame update
     void Start()
     {
-        sequenceFillcontainer =  DOTween.Sequence();
-        sequenceFillcontainer.Pause();
-        for (int i = 0; i < lActionem.Length; i++)
+        //sequenceFillcontainer =  DOTween.Sequence();
+        //sequenceFillcontainer.Pause();
+        //for (int i = 0; i < lActionem.Length; i++)
+        //{
+        //    sequenceFillcontainer.Insert(0.2f * i, lActionem[i].transform.DOLocalMoveY(lDefaultActPosY, 0.5f).SetAutoKill(false)).SetAutoKill(false);
+        //}
+        qActionDeck = new Queue<GameObject>();
+        for (int i = 0; i < lActionDeck.Length; i++)
         {
-            sequenceFillcontainer.Insert(0.2f * i, lActionem[i].transform.DOLocalMoveY(lDefaultActPosY, 0.5f).SetAutoKill(false)).SetAutoKill(false);
+            qActionDeck.Enqueue(lActionDeck[i]);
         }
+        lActionHand = new GameObject[5];
     }
 
     public void UpdateActionContainer()
@@ -35,49 +49,73 @@ public class ActionContainer : MonoBehaviour
         //TODO
     }
 
-    public void FillContainer(LicenseFinish licenseFinish)
+    public void FillContainer(LicenseFinish licenseFinish = null)
     {
         Debug.Log("EnemyFillContainer");
 
-        sequenceFillcontainer.OnComplete(() =>
-        {
-            licenseFinish();
+        //sequenceFillcontainer.OnComplete(() =>
+        //{
+        //    licenseFinish();
 
-        }).Restart();
+        //}).Restart();
+        StartCoroutine(ienuFillContainer(licenseFinish));
+
     }
 
-    public void FillContainer()
+    IEnumerator ienuFillContainer(LicenseFinish licenseFinish=null)
     {
-        Debug.Log("PlayerFillContainer");
-        sequenceFillcontainer.Restart();
+        for (int i = 0; i < lActionHand.Length; i++)
+        {
+            if (lActionHand[i] == null)
+            {
+                yield return new WaitForSeconds(1);
+                lActionHand[i] = qActionDeck.Dequeue();
+                lActionHand[i].transform.DOMove(defaultHandPos[i].position, 0.5f);
+            }
+        }
+        if (licenseFinish != null)
+            licenseFinish();
     }
+
+    //public void FillContainer()
+    //{
+    //    Debug.Log("PlayerFillContainer");
+    //    sequenceFillcontainer.Restart();
+    //}
 
     public void ChooseAction(int index)
     {
-        Debug.Log("AIChooseAction    "+ chosenAct.Length);
-        Vector3 targetPos=chosenPosLeft;
+        Debug.Log("AIChooseAction    " + chosenAct.Length);
+        //Vector3 targetPos = chosenPosLeft;
         for (int i = 0; i < chosenAct.Length; i++)
         {
             if (chosenAct[i] == null)
             {
-                targetPos.x += ((lActionem[0].GetComponent<RectTransform>().sizeDelta.x + 10) * i);
-                chosenAct[i] = lActionem[index];
+                //targetPos.x += ((lActionem[0].GetComponent<RectTransform>().sizeDelta.x + 10) * i);
+                chosenAct[i] = lActionHand[index];
+                lActionHand[index].transform.DOMove(myBlocks[i].position, 0.5f).OnComplete(() =>
+                {
+                    EnemyAI.I.ChooseAction();
+                });
                 break;
             }
         }
-        lActionem[index].transform.DOLocalMove(targetPos, 0.5f).OnComplete(() =>
-        {
-            EnemyAI.I.ChooseAction();
-        });
     }
 
     public void LockActions()
     {
+        foreach (var item in lActionHand)
+        {
+            item.GetComponent<Actionem>().Lock();
+        }
 
     }
 
     public void UnlockActions()
     {
-
+        foreach (var item in lActionHand)
+        {
+            item.GetComponent<Actionem>().Unlock();
+        }
     }
 }

@@ -13,6 +13,9 @@ public class BattleManager : MonoBehaviour
     [SerializeField] GameObject battlePanel;
     [SerializeField] Button btnSelectFinish;
 
+    [SerializeField] GameObject[] enemyBlocks;
+    [SerializeField] GameObject[] playerBlocks;
+
     Card_Enemy.rawEnemy rawEnemyNow;
 
     battleState stateNow;
@@ -40,9 +43,27 @@ public class BattleManager : MonoBehaviour
     public void StartBattle(Card_Enemy.rawEnemy rawEnemy)
     {
         Debug.Log("StartBattle");
+        BackImg.I.SetBlack(true);
         rawEnemyNow = rawEnemy;
         stateNow = battleState.license;
         battlePanel.SetActive(true);
+        foreach (var item in enemyBlocks)
+        {
+            item.SetActive(false);
+        }
+        for (int i = 0; i < rawEnemy.actPoint; i++)
+        {
+            enemyBlocks[i].SetActive(true);
+        }
+        foreach (var item in playerBlocks)
+        {
+            item.SetActive(false);
+        }
+        for (int i = 0; i < PlayerManager.I.GetActPoint(); i++)
+        {
+            playerBlocks[i].SetActive(true);
+        }
+
         enemyContainer.UpdateActionContainer();
         playerContainer.UpdateActionContainer();
         EnemyAI.I.SetRawEnemy(rawEnemyNow);
