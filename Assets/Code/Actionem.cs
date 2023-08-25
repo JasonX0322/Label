@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
+public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler,IPointerEnterHandler,IPointerExitHandler
 {
     bool bLock = true;
     bool bDrag = false;
@@ -18,7 +18,6 @@ public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
     public void Unlock()
     {
         bLock = false;
-        defaultPos = transform.position;
     }
 
     public void Lock()
@@ -33,6 +32,12 @@ public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
             Debug.Log(Input.mousePosition);
             transform.position = Input.mousePosition - mouseDis;
         }
+    }
+
+    public void LicenseActionem(Vector3 pos)
+    {
+        defaultPos = pos;
+        transform.DOMove(pos, 0.5f);
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -55,6 +60,13 @@ public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler
         bDrag = false;
     }
 
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        transform.DOLocalMoveY(transform.localPosition.y + 10, 0.5f);
+    }
 
-
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        transform.DOLocalMoveY(transform.localPosition.y + 10, 0.5f);
+    }
 }

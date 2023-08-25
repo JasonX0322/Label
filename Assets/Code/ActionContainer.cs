@@ -70,7 +70,10 @@ public class ActionContainer : MonoBehaviour
             {
                 yield return new WaitForSeconds(1);
                 lActionHand[i] = qActionDeck.Dequeue();
-                lActionHand[i].transform.DOMove(defaultHandPos[i].position, 0.5f);
+                if (TryGetComponent<Actionem>(out Actionem act))
+                    act.LicenseActionem(defaultHandPos[i].position);
+                else
+                    lActionHand[i].transform.DOMove(defaultHandPos[i].position, 0.5f);
             }
         }
         if (licenseFinish != null)
