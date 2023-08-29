@@ -61,7 +61,7 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Debug.Log("enter");
+        //Debug.Log("enter");
         if (!interactable)
             return;
         imgOutline.enabled = true;
@@ -69,7 +69,7 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        Debug.Log("exit");
+        //Debug.Log("exit");
         if (!interactable)
             return;
         imgOutline.enabled = false;

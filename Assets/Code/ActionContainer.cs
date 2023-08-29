@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class ActionContainer : MonoBehaviour
 {
@@ -12,9 +13,9 @@ public class ActionContainer : MonoBehaviour
     GameObject[] lActionDeck;
     Queue<GameObject> qActionDeck;
     GameObject[] lActionHand;
+    GameObject[] lActionSelected;
     [SerializeField] float lDefaultActPosY;
-    [SerializeField]
-    Transform[] defaultHandPos;
+    [SerializeField] Transform[] defaultHandPos;
     //[SerializeField] Vector3 chosenPosLeft;
     [SerializeField] Transform[] myBlocks;
 
@@ -22,7 +23,6 @@ public class ActionContainer : MonoBehaviour
 
     //[SerializeField] float fActInterval;
 
-    GameObject[] chosenAct;
 
     // Start is called before the first frame update
     void Start()
@@ -45,7 +45,7 @@ public class ActionContainer : MonoBehaviour
     {
         Card_Enemy.rawEnemy rawEnemy = BattleManager.I.GetRawEnemyNow();
         int nActPoint = rawEnemy.actPoint;
-        chosenAct=new GameObject[nActPoint];
+        lActionSelected=new GameObject[nActPoint];
         //TODO
     }
 
@@ -70,10 +70,14 @@ public class ActionContainer : MonoBehaviour
             {
                 yield return new WaitForSeconds(1);
                 lActionHand[i] = qActionDeck.Dequeue();
-                if (TryGetComponent<Actionem>(out Actionem act))
-                    act.LicenseActionem(defaultHandPos[i].position);
+                if (lActionHand[i].TryGetComponent<Actionem>(out Actionem act))
+                {
+                    act.MoveAction(defaultHandPos[i].position,i);
+                }
                 else
+                {
                     lActionHand[i].transform.DOMove(defaultHandPos[i].position, 0.5f);
+                }
             }
         }
         if (licenseFinish != null)
@@ -86,16 +90,15 @@ public class ActionContainer : MonoBehaviour
     //    sequenceFillcontainer.Restart();
     //}
 
-    public void ChooseAction(int index)
+    public void AIChooseAction(int index)
     {
-        Debug.Log("AIChooseAction    " + chosenAct.Length);
+        Debug.Log("AIChooseAction    " + lActionSelected.Length);
         //Vector3 targetPos = chosenPosLeft;
-        for (int i = 0; i < chosenAct.Length; i++)
+        for (int i = 0; i < lActionSelected.Length; i++)
         {
-            if (chosenAct[i] == null)
+            if (lActionSelected[i] == null)
             {
-                //targetPos.x += ((lActionem[0].GetComponent<RectTransform>().sizeDelta.x + 10) * i);
-                chosenAct[i] = lActionHand[index];
+                lActionSelected[i] = lActionHand[index];
                 lActionHand[index].transform.DOMove(myBlocks[i].position, 0.5f).OnComplete(() =>
                 {
                     EnemyAI.I.ChooseAction();
@@ -103,6 +106,60 @@ public class ActionContainer : MonoBehaviour
                 break;
             }
         }
+    }
+
+    public void PlayerChooseAction(int myHandIndex, GameObject targetBlock,int mySelectIndex)
+    {
+        int targetSelectIndex = -1;
+        for (int i = 0; i < myBlocks.Length; i++)
+        {
+            if (myBlocks[i].gameObject==targetBlock)
+            {
+                targetSelectIndex = i;
+                break;
+            }
+        }
+        Debug.Log(targetSelectIndex);
+        if (lActionSelected[targetSelectIndex] ==null)
+        {
+            lActionSelected[targetSelectIndex] = lActionHand[myHandIndex];
+            lActionHand[myHandIndex] = null;
+            lActionSelected[targetSelectIndex].GetComponent<Actionem>().MoveAction(myBlocks[targetSelectIndex].transform.position,true, targetSelectIndex);
+        }
+        else if(mySelectIndex!=-1)
+        {
+            SwitchAction(mySelectIndex, targetSelectIndex);
+        }
+        else
+        {
+            Actionem UnselectOne = lActionSelected[targetSelectIndex].GetComponent<Actionem>();
+            PlayerUnchooseAction(UnselectOne.nHandIndex, UnselectOne.nSelectIndex);
+
+            lActionSelected[targetSelectIndex] = lActionHand[myHandIndex];
+            lActionHand[myHandIndex] = null;
+            lActionSelected[targetSelectIndex].GetComponent<Actionem>().MoveAction(myBlocks[targetSelectIndex].transform.position,true, targetSelectIndex);
+        }
+    }
+
+    public void SwitchAction(int originIndex,int TargetIndex)
+    {
+        GameObject go=lActionSelected[originIndex];
+        Vector3 pos = go.transform.position;
+        lActionSelected[originIndex] = lActionSelected[TargetIndex];
+        lActionSelected[originIndex].GetComponent<Actionem>().MoveAction(lActionSelected[TargetIndex].transform.position,true, TargetIndex);
+        lActionSelected[TargetIndex] = go;
+        lActionSelected[TargetIndex].GetComponent<Actionem>().MoveAction(pos,true,originIndex);
+
+    }
+
+    public void PlayerUnchooseAction(int myHandIndex, int mySelectIndex)
+    {
+        if (mySelectIndex != -1)
+        {
+            lActionHand[myHandIndex] = lActionSelected[mySelectIndex];
+            lActionSelected[mySelectIndex] = null;
+        }
+        lActionHand[myHandIndex].GetComponent<Actionem>().MoveAction(defaultHandPos[myHandIndex].transform.position,false,-1);
     }
 
     public void LockActions()

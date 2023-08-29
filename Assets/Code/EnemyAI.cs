@@ -49,6 +49,6 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
-        enemyActionContainer.ChooseAction(_index++);
+        enemyActionContainer.AIChooseAction(_index++);
     }
 }
