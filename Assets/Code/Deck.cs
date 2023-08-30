@@ -128,6 +128,8 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
     {
         if (!interactable|| tempClose)
             return;
+
+        Debug.LogWarning("选择战场");
         mat.DOFloat(0, "_OpacityNow", 2).OnComplete(()=> License());
 
         BackImg.I.SwitchBG(texFull);
