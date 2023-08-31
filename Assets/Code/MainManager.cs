@@ -2,12 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+
+public delegate void GotoScene();
 
 public class MainManager : MonoBehaviour
 {
     
     public static MainManager I;
+
+    public string targetScene;
 
 
     void Awake()
@@ -22,9 +27,5 @@ public class MainManager : MonoBehaviour
         
     }
 
-    void SwitchScene()
-    {
-
-    }
 
 }

@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPointerClickHandler
@@ -68,21 +69,28 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
 
         Debug.LogWarning("选择战场");
 
-        imgCover.DOFade(0, 2).OnComplete(() => License());
+        MainManager.I.targetScene = "battle";
 
-        BackImg.I.OpenBG(spBattleFieldBG);
-
-        for (int i = 0; i < allDecks.Length; i++)
+        BlackProcess.I.BlackScene(() =>
         {
-            if (allDecks[i] != this)
-            {
-                allDecks[i].HideDeck();
-            }
-        }
+            SceneManager.LoadScene("loading");
+        });
 
-        interactable = false;
-        UnHighLightCards();
-        AudioManager.I.SwitchBGM(myBGM);
+        //imgCover.DOFade(0, 2).OnComplete(() => License());
+
+        //BackImg.I.OpenBG(spBattleFieldBG);
+
+        //for (int i = 0; i < allDecks.Length; i++)
+        //{
+        //    if (allDecks[i] != this)
+        //    {
+        //        allDecks[i].HideDeck();
+        //    }
+        //}
+
+        //interactable = false;
+        //UnHighLightCards();
+        //AudioManager.I.SwitchBGM(myBGM);
     }
 
     /// <summary>
