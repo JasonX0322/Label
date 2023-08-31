@@ -6,39 +6,51 @@ using UnityEngine.UI;
 
 public class BackImg : MonoBehaviour
 {
-    [SerializeField] Material matBG;
-    [SerializeField] Texture texCity;
-    Image img;
+    //[SerializeField] Material matBG;
+    //[SerializeField] Texture texCity;
+    //Image img;
+    [SerializeField] Image img1;
+    [SerializeField] Image img2;
 
     public static BackImg I;
 
     void Awake()
     {
         I = this;
-        img=GetComponent<Image>();
+        //img=GetComponent<Image>();
     }
     // Start is called before the first frame update
     void Start()
     {
-        matBG.SetTexture("_NowTex", texCity);
-        matBG.SetFloat("_OpacityNow", 1);
+        //matBG.SetTexture("_NowTex", texCity);
+        //matBG.SetFloat("_OpacityNow", 1);
     }
 
-    public void SwitchBG(Texture texNext)
+    //public void SwitchBG(Texture texNext)
+    //{
+    //    matBG.SetTexture("_NextTex", texNext);
+    //    matBG.DOFloat(0, "_OpacityNow", 2).OnComplete(() =>
+    //    {
+    //        matBG.SetTexture("_NowTex", texNext);
+    //        matBG.SetFloat("_OpacityNow", 1);
+    //    });
+    //}
+
+    public void OpenBG(Sprite sp)
     {
-        matBG.SetTexture("_NextTex", texNext);
-        matBG.DOFloat(0, "_OpacityNow", 2).OnComplete(() =>
-        {
-            matBG.SetTexture("_NowTex", texNext);
-            matBG.SetFloat("_OpacityNow", 1);
-        });
+        img2.sprite = sp;
+        img2.gameObject.transform.DOScale(1, 1);
+    }
+    public void CloseBG()
+    {
+        img2.gameObject.transform.DOScale(0, 1);
     }
 
     public void SetBlack(bool b)
     {
         if (b)
-            img.DOColor(new Color(0.3f, 0.3f, 0.3f, 1), 0.5f);
+            img2.DOColor(new Color(0.3f, 0.3f, 0.3f, 1), 0.5f);
         else
-            img.DOColor(Color.white, 0.5f);
+            img2.DOColor(Color.white, 0.5f);
     }
 }

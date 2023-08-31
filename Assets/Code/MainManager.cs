@@ -6,15 +6,14 @@ using UnityEngine.UI;
 
 public class MainManager : MonoBehaviour
 {
+    
     public static MainManager I;
 
-
-    public Image imgBG;
-    public Material matBG;
 
     void Awake()
     {
         I = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     // Start is called before the first frame update
@@ -23,9 +22,9 @@ public class MainManager : MonoBehaviour
         
     }
 
-    // Update is called once per frame
-    void Update()
+    void SwitchScene()
     {
+
     }
 
 }

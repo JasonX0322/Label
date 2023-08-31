@@ -49,6 +49,11 @@ public class BattleFieldManager : MonoBehaviour
         ReadCSV.I.LoadBattleCSV(battleName);
     }
 
+    public void StartBattleField()
+    {
+
+    }
+
     int nDepthNow;
     int nWidthNow;
     /// <summary>

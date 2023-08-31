@@ -6,18 +6,9 @@ using UnityEngine.UI;
 
 public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPointerClickHandler
 {
-    [SerializeField] GameObject[] goTotalDeckCard;
-    GameObject[] goDeckCard;
-    Transform[] tDeckCard;
-    Image[] imgDeckCard;
     [SerializeField] Image imgCover;
-    [SerializeField] GameObject[] goBorder;
-    [SerializeField] Texture texFull;
-    [SerializeField] Texture texCover;
-
-    [SerializeField] Material matUnselected;
-    [SerializeField] Material matDefeated;
-
+    [SerializeField] GameObject goBorder;
+    [SerializeField] Sprite spBattleFieldBG;
 
     [SerializeField] Deck[] allDecks;
     [SerializeField] AudioClip myBGM;
@@ -28,52 +19,14 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
 
     public bool tempClose;
 
-    Object objCard;
-
     [SerializeField] int nFieldWidth;
     [SerializeField] int nFieldDepth;
     [SerializeField] string strFieldName;
-    void Awake()
-    {
-        objCard = Resources.Load("prefab/Card");
-        goDeckCard=new GameObject[nFieldDepth + 1];
-        for(int i= 0; i < goTotalDeckCard.Length; i++)
-        {
-            if (i < nFieldDepth)
-            {
-                goTotalDeckCard[i].SetActive(true);
-                goDeckCard[i] = goTotalDeckCard[i];
-            }
-            else
-            {
-                goTotalDeckCard[i].SetActive(false);
-            }
-        }
-        goDeckCard[goDeckCard.Length - 1] = imgCover.gameObject;
-
-        tDeckCard = new Transform[goDeckCard.Length];
-        imgDeckCard = new Image[goDeckCard.Length];
-        for (int i = 0; i < goDeckCard.Length; i++)
-        {
-            tDeckCard[i] = goDeckCard[i].transform;
-        }
-        for (int i = 0; i < goDeckCard.Length-1; i++)//最后一张是cover
-        {
-            imgDeckCard[i] = goDeckCard[i].GetComponentInChildren<Image>();
-        }
-        imgDeckCard[imgDeckCard.Length - 1] = imgCover;
-    }
 
     // Start is called before the first frame update
     void Start()
     {
-        for (int i = 0; i < tDeckCard.Length; i++)
-        {
-            tDeckCard[i].localPosition = new Vector3(-20,-20,0) + new Vector3(4, 4, 0) * i;
-        }
-        mat=new Material(matUnselected);
-        imgCover.material = mat;
-        mat.SetTexture("_NowTex", texCover);
+        mat = imgCover.material;
     }
 
 
@@ -89,15 +42,7 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
     /// </summary>
     void HightLightCards()
     {
-        for (int i = 0; i < tDeckCard.Length; i++)
-        {
-            tDeckCard[i].DOLocalMoveX(-20 + 10 * i + 4, 0.5f);
-            goBorder[i].transform.DOLocalMoveX(-20 + 10 * i + 4, 0.5f);
-        }
-        foreach (var item in goBorder)
-        {
-            item.SetActive(true);
-        }
+        goBorder.SetActive(true);
         GetComponent<AudioSource>().Play();
     }
 
@@ -113,15 +58,7 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
     /// </summary>
     void UnHighLightCards()
     {
-        for (int i = 0; i < tDeckCard.Length; i++)
-        {
-            tDeckCard[i].DOLocalMoveX(-10 + 4 * i, 0.5f);
-            goBorder[i].transform.DOLocalMoveX(-10 + 4 * i, 0.5f);
-        }
-        foreach (var item in goBorder)
-        {
-            item.SetActive(false);
-        }
+        goBorder.SetActive(false);
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -130,9 +67,11 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
             return;
 
         Debug.LogWarning("选择战场");
-        mat.DOFloat(0, "_OpacityNow", 2).OnComplete(()=> License());
 
-        BackImg.I.SwitchBG(texFull);
+        imgCover.DOFade(0, 2).OnComplete(() => License());
+
+        BackImg.I.OpenBG(spBattleFieldBG);
+
         for (int i = 0; i < allDecks.Length; i++)
         {
             if (allDecks[i] != this)
@@ -152,10 +91,7 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
     public void HideDeck()
     {
         interactable = false;
-        foreach (var item in imgDeckCard)
-        {
-            item.DOFade(0, 0.5f).OnComplete(() => item.enabled = false) ;
-        }
+        imgCover.DOFade(0, 0.5f).OnComplete(() => imgCover.enabled = false);
     }
     /// <summary>
     /// 显示卡组
@@ -163,10 +99,7 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
     public void ShowDeck()
     {
         interactable = true;
-        foreach (var item in imgDeckCard)
-        {
-            item.DOFade(1, 0.5f);
-        }
+        imgCover.DOFade(1, 0.5f);
     }
 
     /// <summary>
@@ -175,26 +108,8 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
     void License()
     {
         Debug.Log("License");
-        StartCoroutine(ienuLicense());
-    }
-
-    IEnumerator ienuLicense()
-    {
+        //StartCoroutine(ienuLicense());
         BattleFieldManager.I.SetBattleField(nFieldWidth, nFieldDepth, strFieldName);
-        for (int i = 0; i < nFieldDepth; i++)
-        {
-            goDeckCard[i].SetActive(false);
-            for (int j = 0; j < nFieldWidth; j++)
-            {
-                GameObject goCard = GameObject.Instantiate(objCard) as GameObject;
-                goCard.transform.SetParent(transform);
-                goCard.transform.localScale = Vector3.one;
-                goCard.transform.SetAsFirstSibling();
-                goCard.transform.position = goDeckCard[i].transform.position;
-                BattleFieldManager.I.AddCard(goCard);
-                yield return new WaitForSeconds(0.1f);
-            }
-        }
+        BattleFieldManager.I.StartBattleField();
     }
-
 }
