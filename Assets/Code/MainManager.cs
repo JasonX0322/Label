@@ -14,6 +14,15 @@ public class MainManager : MonoBehaviour
 
     public string targetScene;
 
+    public struct BattleInfo
+    {
+        public string battleName;
+        public void SetBattle(string name)
+        {
+            battleName = name;
+        }
+    }
+    public BattleInfo battleInfo;
 
     void Awake()
     {
@@ -25,6 +34,11 @@ public class MainManager : MonoBehaviour
     void Start()
     {
         
+    }
+
+    void Update()
+    {
+        Debug.Log(battleInfo.battleName);
     }
 
 

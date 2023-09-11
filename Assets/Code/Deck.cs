@@ -1,5 +1,6 @@
 ﻿using DG.Tweening;
 using System.Collections;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -16,13 +17,13 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
 
     Material mat;
 
-    bool interactable = true;
+    public bool interactable = true;
 
     public bool tempClose;
 
-    [SerializeField] int nFieldWidth;
-    [SerializeField] int nFieldDepth;
-    [SerializeField] string strFieldName;
+    //[SerializeField] int nFieldWidth;
+    //[SerializeField] int nFieldDepth;
+    [SerializeField] string strBattleName;
 
     // Start is called before the first frame update
     void Start()
@@ -67,9 +68,21 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
         if (!interactable|| tempClose)
             return;
 
+        foreach (var item in allDecks)
+        {
+            item.interactable = false;
+        }
+
+        imgCover.gameObject.transform.DOScale(1.5f, 1);
+        imgCover.DOFade(0, 1);
+
         Debug.LogWarning("选择战场");
 
         MainManager.I.targetScene = "battle";
+
+        MainManager.BattleInfo info = new MainManager.BattleInfo();
+        info.SetBattle(strBattleName);
+        MainManager.I.battleInfo = info;
 
         BlackProcess.I.BlackScene(() =>
         {
@@ -94,30 +107,13 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
     }
 
     /// <summary>
-    /// 隐藏卡组
-    /// </summary>
-    public void HideDeck()
-    {
-        interactable = false;
-        imgCover.DOFade(0, 0.5f).OnComplete(() => imgCover.enabled = false);
-    }
-    /// <summary>
-    /// 显示卡组
-    /// </summary>
-    public void ShowDeck()
-    {
-        interactable = true;
-        imgCover.DOFade(1, 0.5f);
-    }
-
-    /// <summary>
     /// 发牌
     /// </summary>
     void License()
     {
         Debug.Log("License");
         //StartCoroutine(ienuLicense());
-        BattleFieldManager.I.SetBattleField(nFieldWidth, nFieldDepth, strFieldName);
+        //BattleFieldManager.I.SetBattleField(nFieldWidth, nFieldDepth, strBattleName);
         BattleFieldManager.I.StartBattleField();
     }
 }

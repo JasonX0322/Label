@@ -1514,8 +1514,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f69a1f976c18b2743bdb072ecd9f3922, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  img1: {fileID: 688761005}
-  img2: {fileID: 0}
 --- !u!1 &2106423673
 GameObject:
   m_ObjectHideFlags: 0
@@ -2382,10 +2380,9 @@ MonoBehaviour:
   - {fileID: 953751364698345637}
   - {fileID: 953751364448034206}
   myBGM: {fileID: 0}
+  interactable: 1
   tempClose: 1
-  nFieldWidth: 5
-  nFieldDepth: 10
-  strFieldName: 
+  strBattleName: 
 --- !u!114 &953751364698345637
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2409,10 +2406,9 @@ MonoBehaviour:
   - {fileID: 953751364698345637}
   - {fileID: 953751364448034206}
   myBGM: {fileID: 0}
+  interactable: 1
   tempClose: 1
-  nFieldWidth: 5
-  nFieldDepth: 10
-  strFieldName: 
+  strBattleName: 
 --- !u!114 &953751364734121041
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2436,10 +2432,9 @@ MonoBehaviour:
   - {fileID: 953751364698345637}
   - {fileID: 953751364448034206}
   myBGM: {fileID: 8300000, guid: 8e9f3d9fc9313c0439b519d6c743d0fb, type: 3}
+  interactable: 1
   tempClose: 0
-  nFieldWidth: 5
-  nFieldDepth: 10
-  strFieldName: tavern
+  strBattleName: tavern
 --- !u!114 &953751365069738238
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2463,10 +2458,9 @@ MonoBehaviour:
   - {fileID: 953751364698345637}
   - {fileID: 953751364448034206}
   myBGM: {fileID: 0}
+  interactable: 1
   tempClose: 1
-  nFieldWidth: 5
-  nFieldDepth: 10
-  strFieldName: 
+  strBattleName: 
 --- !u!114 &953751365581496055
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2490,10 +2484,9 @@ MonoBehaviour:
   - {fileID: 953751364698345637}
   - {fileID: 953751364448034206}
   myBGM: {fileID: 0}
+  interactable: 1
   tempClose: 1
-  nFieldWidth: 5
-  nFieldDepth: 10
-  strFieldName: 
+  strBattleName: 
 --- !u!114 &953751365911646996
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2517,10 +2510,9 @@ MonoBehaviour:
   - {fileID: 953751364698345637}
   - {fileID: 953751364448034206}
   myBGM: {fileID: 0}
+  interactable: 1
   tempClose: 1
-  nFieldWidth: 5
-  nFieldDepth: 10
-  strFieldName: 
+  strBattleName: 
 --- !u!114 &2614134345178995957
 MonoBehaviour:
   m_ObjectHideFlags: 0

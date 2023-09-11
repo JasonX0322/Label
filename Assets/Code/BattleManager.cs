@@ -43,7 +43,7 @@ public class BattleManager : MonoBehaviour
     public void StartBattle(Card_Enemy.rawEnemy rawEnemy)
     {
         Debug.Log("StartBattle");
-        BackImg.I.SetBlack(true);
+        BGManager.I.SetBlack(true);
         rawEnemyNow = rawEnemy;
         stateNow = battleState.license;
         battlePanel.SetActive(true);
