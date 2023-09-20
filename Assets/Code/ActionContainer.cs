@@ -70,14 +70,8 @@ public class ActionContainer : MonoBehaviour
             {
                 yield return new WaitForSeconds(1);
                 lActionHand[i] = qActionDeck.Dequeue();
-                if (lActionHand[i].TryGetComponent<Actionem>(out Actionem act))
-                {
-                    act.MoveAction(defaultHandPos[i].position,i);
-                }
-                else
-                {
-                    lActionHand[i].transform.DOMove(defaultHandPos[i].position, 0.5f);
-                }
+                Actionem act = lActionHand[i].GetComponent<Actionem>();
+                act.FillAction(defaultHandPos[i].position, i);
             }
         }
         if (licenseFinish != null)
@@ -166,7 +160,8 @@ public class ActionContainer : MonoBehaviour
     {
         foreach (var item in lActionHand)
         {
-            item.GetComponent<Actionem>().Lock();
+            if (item != null)
+                item.GetComponent<Actionem>().Lock();
         }
 
     }
@@ -175,7 +170,13 @@ public class ActionContainer : MonoBehaviour
     {
         foreach (var item in lActionHand)
         {
-            item.GetComponent<Actionem>().Unlock();
+            if (item != null)
+                item.GetComponent<Actionem>().Unlock();
         }
+    }
+
+    public GameObject[] GetLActionSelected()
+    {
+        return lActionSelected;
     }
 }

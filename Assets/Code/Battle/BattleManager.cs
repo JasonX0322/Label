@@ -104,6 +104,52 @@ public class BattleManager : MonoBehaviour
         stateNow = battleState.determination;
         btnSelectFinish.interactable = false;
         playerContainer.LockActions();
+        ActionAnim();
+    }
+
+    /// <summary>
+    /// 行动碰撞动画
+    /// </summary>
+    /// <returns></returns>
+    public void ActionAnim()
+    {
+        StartCoroutine(ienuActionemAtk());
+    }
+
+    IEnumerator ienuActionemAtk()
+    {
+        GameObject[] playerSelected = playerContainer.GetLActionSelected();
+        Debug.Log("player select " + playerSelected.Length + " actions");
+        GameObject[] enemySelected = enemyContainer.GetLActionSelected();
+        Debug.Log("enemy select " + enemySelected.Length + " actions");
+        int maxIndex = (playerSelected.Length > enemySelected.Length) ? playerSelected.Length : enemySelected.Length;
+        Actionem[] playerAction = new Actionem[maxIndex];
+        Actionem[] enemyAction = new Actionem[maxIndex];
+        for (int i = 0; i < playerSelected.Length; i++)
+        {
+            playerAction[i] = playerSelected[i].GetComponent<Actionem>();
+        }
+        for (int i = 0; i < playerSelected.Length; i++)
+        {
+            enemyAction[i] = enemySelected[i].GetComponent<Actionem>();
+        }
+        for (int i = 0; i < maxIndex; i++)
+        {
+            if (playerAction[i] != null)
+                playerAction[i].ActionCollision(enemyAction[i]);
+            if (enemyAction[i] != null)
+                enemyAction[i].ActionCollision(playerAction[i]);
+            yield return new WaitForSeconds(1);
+        }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="action">目标</param>
+    /// <param name="damage">伤害</param>
+    public void Attack(Actionem action,int damage)
+    {
+
     }
 
     public Card_Enemy.rawEnemy GetRawEnemyNow()

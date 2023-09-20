@@ -95,6 +95,19 @@ public class ReadCSV : MonoBehaviour
     {
         return dtInternalityPool.Rows[row][attribute].ToString();
     }
+
+    public struct fieldSize
+    {
+        public int nWidth;
+        public int nDepth;
+    }
+    public fieldSize GetFieldSize()
+    {
+        fieldSize fSize = new fieldSize();
+        fSize.nDepth = dtField.Rows.Count;
+        fSize.nWidth= dtField.Columns.Count;
+        return fSize;
+    }
     /// <summary>
     /// 从csv读取数据返回table
     /// </summary>

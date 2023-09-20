@@ -109,11 +109,11 @@ public class Deck : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler,IPo
     /// <summary>
     /// 发牌
     /// </summary>
-    void License()
-    {
-        Debug.Log("License");
-        //StartCoroutine(ienuLicense());
-        //BattleFieldManager.I.SetBattleField(nFieldWidth, nFieldDepth, strBattleName);
-        BattleFieldManager.I.StartBattleField();
-    }
+    //void License()
+    //{
+    //    Debug.Log("License");
+    //    //StartCoroutine(ienuLicense());
+    //    //BattleFieldManager.I.SetBattleField(nFieldWidth, nFieldDepth, strBattleName);
+    //    BattleFieldManager.I.StartBattleField();
+    //}
 }

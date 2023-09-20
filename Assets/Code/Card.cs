@@ -37,12 +37,12 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     /// </summary>
     public void MoveTo(Vector3 pos,float scale,float alpha,bool interactable=false)
     {
+        transform.localScale = Vector3.zero;
+        imgCard.color = new Color(1, 1, 1, 0);
         transform.SetAsFirstSibling();
-        transform.DOLocalMove(pos, 0.1f).OnComplete(()=>
-        {
-        });
-        transform.DOScale(scale, 0.1f);
-        imgCard.DOFade(alpha, 0.1f);
+        transform.localPosition = pos;
+        transform.DOScale(scale, 1);
+        imgCard.DOFade(alpha, 1);
 
         SetInteractable(interactable);
     }

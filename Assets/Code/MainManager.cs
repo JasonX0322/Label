@@ -24,10 +24,18 @@ public class MainManager : MonoBehaviour
     }
     public BattleInfo battleInfo;
 
+    public bool testMode;
+
     void Awake()
     {
         I = this;
         DontDestroyOnLoad(gameObject);
+
+        if(testMode)
+        {
+            battleInfo=new BattleInfo();
+            battleInfo.SetBattle("tavern");
+        }
     }
 
     // Start is called before the first frame update
@@ -38,7 +46,7 @@ public class MainManager : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(battleInfo.battleName);
+        //Debug.Log(battleInfo.battleName);
     }
 
 
