@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,11 +37,13 @@ public class BGManager : MonoBehaviour
     {
         if(toBlack)
         {
-            img.color = new Color(0.3f, 0.3f, 0.3f, 1);
+            //img.color = new Color(0.3f, 0.3f, 0.3f, 1);
+            img.DOColor(new Color(0.3f, 0.3f, 0.3f, 1),0.5f);
         }
         else
         {
-            img.color = Color.white;
+            //img.color = Color.white;
+            img.DOColor(Color.white, 0.5f);
         }
     }
 }

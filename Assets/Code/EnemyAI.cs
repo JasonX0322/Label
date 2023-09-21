@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyAI : MonoBehaviour
+public class EnemyAI : Character
 {
     public static EnemyAI I;
-    [SerializeField] ActionContainer enemyActionContainer;
 
-    int actPointNow;
+    [SerializeField] ActionContainer enemyActionContainer;
 
     EnemyFinish finishEvent;
 
@@ -27,12 +26,14 @@ public class EnemyAI : MonoBehaviour
     public void SetRawEnemy(Card_Enemy.rawEnemy raw)
     {
         myRawEnemy = raw;
+        HP_Max = myRawEnemy.health;
+        HP_Remain = myRawEnemy.health;
+        ActPoint_Max = myRawEnemy.actPoint;
     }
 
     public void ChooseAllAction(EnemyFinish enemyFinish)
     {
         Debug.Log("ChooseAll");
-        actPointNow = myRawEnemy.actPoint;
         finishEvent = enemyFinish;
         ChooseAction();
     }
@@ -40,9 +41,10 @@ public class EnemyAI : MonoBehaviour
     int _index;
     public void ChooseAction()
     {
-        Debug.Log("ChooseAct      "+actPointNow);
-        actPointNow--;
-        if (actPointNow < 0)
+        int ActPoint_Remain = ActPoint_Max;
+        Debug.Log("ChooseAct      "+ActPoint_Remain);
+        ActPoint_Remain--;
+        if (ActPoint_Remain < 0)
         {
             Debug.Log("ChooseFinish");
             finishEvent();

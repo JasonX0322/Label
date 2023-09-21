@@ -20,6 +20,7 @@ public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler,IPo
     public int nSelectIndex = -1;
 
     public bool isEnemy;
+    int dir;
 
     [SerializeField] ActionContainer container;
 
@@ -36,23 +37,26 @@ public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler,IPo
     // Start is called before the first frame update
     void Start()
     {
+        dir = isEnemy ? -1 : 1;
     }
 
     public void Unlock()
     {
         bLock = false;
+        Debug.Log("Unlock");
     }
 
     public void Lock()
     {
         bLock = true;
+        Debug.Log("Lock");
     }
 
     public void Update()
     {
         if(bDragging)
         {
-            //Debug.Log(Input.mousePosition);
+            Debug.Log(Input.mousePosition);
             transform.position = Input.mousePosition - mouseDis;
         }
     }
@@ -60,9 +64,8 @@ public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler,IPo
 
     public void FillAction(Vector3 pos, int handIndex)
     {
-        int dir = isEnemy ? 1 : -1;
         Vector3 newPos = pos;
-        newPos.y += 200 * dir;
+        newPos.y += -200 * dir;
         transform.position = newPos;
         defaultPos = pos;
         nHandIndex = handIndex;
@@ -79,6 +82,8 @@ public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler,IPo
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        if (isEnemy)
+            return;
         if (bLock)
             return;
         transform.SetAsLastSibling();
@@ -88,6 +93,8 @@ public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler,IPo
     }
     public void OnPointerUp(PointerEventData eventData)
     {
+        if (isEnemy)
+            return;
         if (bLock)
             return;
         bDragging = false;
@@ -104,6 +111,8 @@ public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler,IPo
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        if (isEnemy)
+            return;
         if (bDragging)
             return;
         if (!bSelected)
@@ -116,6 +125,8 @@ public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler,IPo
 
     public void OnPointerExit(PointerEventData eventData)
     {
+        if (isEnemy)
+            return;
         if (bDragging)
             return;
         transform.DOMove(defaultPos, 0.5f);
@@ -248,69 +259,64 @@ public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler,IPo
                     break;
             }
         }
+    }
 
-        void AtkSuccessAnim(int damage,bool isNull=false)
+
+
+
+
+    void AtkSuccessAnim(int damage, bool isNull = false)
+    {
+        Sequence sqcAtkSuccess;
+        sqcAtkSuccess = DOTween.Sequence();
+        sqcAtkSuccess.Append(transform.DOLocalMoveY(transform.localPosition.y + 100 * dir, 0.5f));
+        sqcAtkSuccess.PrependInterval(1);
+        sqcAtkSuccess.Append(GetComponent<Image>().DOFade(0, 0.5f));
+    }
+
+    void AtkFailAnim()
+    {
+        Sequence sqcAtkFail;
+        sqcAtkFail = DOTween.Sequence();
+        sqcAtkFail.Append(transform.DOLocalMoveY(transform.localPosition.y + 50 * dir, 0.1f));
+        sqcAtkFail.Append(transform.DOLocalMoveY(transform.localPosition.y - 50 * dir, 1).SetEase(Ease.OutSine));
+        sqcAtkFail.Insert(0.1f, GetComponent<Image>().DOFade(0, 1));
+    }
+
+    void DefSuccessAnim()
+    {
+        transform.DOLocalMoveY(transform.localPosition.y - 20 * dir, 0.1f);
+    }
+
+    void DefFailAnim()
+    {
+        transform.DOLocalMoveY(transform.localPosition.y - 20 * dir, 0.1f).OnComplete(() =>
+            GetComponent<Image>().DOFade(0, 0.5f)
+        );
+    }
+
+    void DefCounterAnim(bool isSuccess)
+    {
+        transform.DOLocalMoveY(transform.localPosition.y, 0.1f).OnComplete(() =>
         {
-            if(isNull)
-            {
-                transform.DOLocalMoveY(transform.localPosition.y + 100, 1).OnComplete(() =>
-                {
-                    BattleManager.I.Attack(other, damage);
-                });
-            }
+            if (isSuccess)
+                DefSuccessAnim();
             else
+                DefFailAnim();
+        });
+    }
+
+    void CounterAnim(bool isSuccess, Actionem otherAct = null)
+    {
+        transform.DOLocalMoveY(transform.localPosition.y - 20 * dir, 0.1f).SetEase(Ease.OutSine).OnComplete(() =>
+        {
+            transform.DOLocalMoveY(transform.localPosition.y + 70 * dir, 0.1f).OnComplete(() =>
             {
-                transform.DOLocalMoveY(transform.localPosition.y + 50, 1).OnComplete(() =>
-                {
-                    transform.DOLocalMoveY(transform.localPosition.y + 50, 1).OnComplete(() =>
-                        BattleManager.I.Attack(other, damage)
-                    );
-                });
-            }
-        }
-
-        void AtkFailAnim()
-        {
-            transform.DOLocalMoveY(transform.localPosition.y + 50, 1).OnComplete(() =>
-                GetComponent<Image>().DOFade(0, 0.5f)
-            );
-        }
-
-        void DefSuccessAnim()
-        {
-            transform.DOLocalMoveY(transform.localPosition.y - 20, 1);
-        }
-
-        void DefFailAnim()
-        {
-            transform.DOLocalMoveY(transform.localPosition.y - 20, 1).OnComplete(() =>
-                GetComponent<Image>().DOFade(0, 0.5f)
-            );
-        }
-
-        void DefCounterAnim(bool isSuccess)
-        {
-            transform.DOLocalMoveY(transform.localPosition.y, 1).OnComplete(() =>
-             {
-                 if (isSuccess)
-                     DefSuccessAnim();
-                 else
-                     DefFailAnim();
-             });
-        }
-
-        void CounterAnim(bool isSuccess, Actionem otherAct=null)
-        {
-            transform.DOLocalMoveY(transform.localPosition.y - 20, 1).SetEase(Ease.OutSine).OnComplete(() =>
-            {
-                transform.DOLocalMoveY(transform.localPosition.y + 70, 1).OnComplete(() =>
-                {
-                    if (isSuccess)
-                        BattleManager.I.Attack(otherAct, atk - otherAct.def);
-                    else
-                        GetComponent<Image>().DOFade(0, 0.5f);
-                });
+                if (isSuccess)
+                    BattleManager.I.Attack(otherAct, atk - otherAct.def);
+                else
+                    GetComponent<Image>().DOFade(0, 0.5f);
             });
-        }
+        });
     }
 }

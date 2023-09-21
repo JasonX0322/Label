@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : Character
 {
-    int maxHealth;
-    int actPoint=1;
     public static PlayerManager I;
 
     void Awake()
@@ -21,6 +19,6 @@ public class PlayerManager : MonoBehaviour
 
     public int GetActPoint()
     {
-        return actPoint;
+        return ActPoint_Max;
     }
 }

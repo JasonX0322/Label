@@ -22,6 +22,11 @@ public class BattleManager : MonoBehaviour
 
     public static BattleManager I;
 
+    [SerializeField] GameObject playerInfo;
+    [SerializeField] HPBar playerHPBar;
+    [SerializeField] GameObject enemyInfo;
+    [SerializeField] HPBar enemyHPBar;
+
     enum battleState
     {
         license,
@@ -43,6 +48,10 @@ public class BattleManager : MonoBehaviour
     public void StartBattle(Card_Enemy.rawEnemy rawEnemy)
     {
         Debug.Log("StartBattle");
+        playerInfo.SetActive(true);
+        PlayerManager.I.myHPBar = playerHPBar;
+        enemyInfo.SetActive(true);
+        EnemyAI.I.myHPBar = enemyHPBar;
         BGManager.I.SetBlack(true);
         rawEnemyNow = rawEnemy;
         stateNow = battleState.license;
@@ -141,7 +150,38 @@ public class BattleManager : MonoBehaviour
                 enemyAction[i].ActionCollision(playerAction[i]);
             yield return new WaitForSeconds(1);
         }
+
+        Determin();
     }
+
+    /// <summary>
+    /// 判断胜负
+    /// </summary>
+    void Determin()
+    {
+        int playerHP = PlayerManager.I.HP_Remain;
+        int enemyHP = EnemyAI.I.HP_Remain;
+        if (playerHP <= 0)
+        {
+            BattleFail();
+        }
+        else if(enemyHP<=0)
+        {
+            BattleSuccess();
+        }
+    }
+
+    [SerializeField] GameObject pageGameFail;
+    void BattleFail()
+    {
+        pageGameFail.SetActive(true);
+    }
+
+    void BattleSuccess()
+    {
+
+    }
+
     /// <summary>
     /// 
     /// </summary>
