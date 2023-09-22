@@ -168,6 +168,7 @@ public class ActionContainer : MonoBehaviour
 
     public void UnlockActions()
     {
+        Debug.Log(name + "Unlock");
         foreach (var item in lActionHand)
         {
             if (item != null)

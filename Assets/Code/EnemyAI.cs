@@ -35,13 +35,13 @@ public class EnemyAI : Character
     {
         Debug.Log("ChooseAll");
         finishEvent = enemyFinish;
+        ActPoint_Remain = ActPoint_Max;
         ChooseAction();
     }
 
     int _index;
     public void ChooseAction()
     {
-        int ActPoint_Remain = ActPoint_Max;
         Debug.Log("ChooseAct      "+ActPoint_Remain);
         ActPoint_Remain--;
         if (ActPoint_Remain < 0)

@@ -7,6 +7,7 @@ public class Character : MonoBehaviour
     public int HP_Max;
     public int HP_Remain;
     public int ActPoint_Max;
+    public int ActPoint_Remain;
 
     public HPBar myHPBar;
     // Start is called before the first frame update
