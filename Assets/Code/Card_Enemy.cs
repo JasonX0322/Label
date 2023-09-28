@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEditor.SceneManagement;
 using UnityEditorInternal.VersionControl;
 using UnityEngine;
+using static Card_Enemy;
 
 public class Card_Enemy : Card
 {
@@ -41,6 +42,8 @@ public class Card_Enemy : Card
         //Debug.Log(enemyIndex);
         myRawEnemy.name = ReadCSV.I.GetEnemyElement(enemyIndex, "name");
         myRawEnemy.actPoint = 1;//TODO
+        myRawEnemy.health = 5;
+        myRawEnemy.atk = 5;
         //Debug.Log(myRawEnemy.name);
         SetPool(enemyIndex,PoolType.personality);
         SetPool(enemyIndex,PoolType.appearance);
@@ -50,7 +53,7 @@ public class Card_Enemy : Card
 
         string spPath = BattleFieldManager.I.GetFieldNow();
         spPath = spPath+"/"+ myRawEnemy.name;
-        SetImage(Resources.Load<Texture>(spPath));
+        SetImage(Resources.Load<Sprite>(spPath));
     }
     /// <summary>
     /// 生成技能池
@@ -136,27 +139,32 @@ public class Card_Enemy : Card
     public override void ClickEvent()
     {
         Debug.Log("ClickEvent");
-
         BattleFieldManager.I.ExitBattleField(this.gameObject);
-
-        Sequence sequence = DOTween.Sequence();
-        sequence.Append(transform.DOLocalMove(new Vector3(850, 370, 0), 1));
-        sequence.Insert(0, transform.DOScale(1.5f, 0.5f));
-        sequence.Insert(0.5f, transform.DOScale(1, 0.5f).SetEase(Ease.OutSine));
-        sequence.OnComplete(() =>
-        {
-            BindLabelPage();
-            BattleManager.I.StartBattle(myRawEnemy);
-        });
         interactable = false;
+        imgOutline.enabled = false;
+
+        TurnOver(() =>
+        {
+            Sequence sequence = DOTween.Sequence();
+            sequence.Append(transform.DOLocalMove(new Vector3(850, 370, 0), 1));
+            sequence.Insert(0, transform.DOScale(1.5f, 0.5f));
+            sequence.Insert(0.5f, transform.DOScale(1, 0.5f).SetEase(Ease.OutSine));
+            sequence.OnComplete(() =>
+            {
+                BindLabelPage();
+                BattleManager.I.StartBattle(myRawEnemy,this.gameObject);
+            });
+        });
+
     }
 
+    LabelMaster myLabel;
     void BindLabelPage()
     {
-        LabelMaster labelMaster = this.gameObject.AddComponent<LabelMaster>();
+        myLabel = this.gameObject.AddComponent<LabelMaster>();
         Transform overall = BattleFieldManager.I.GetOverAll();
         GameObject dataPage = BattleFieldManager.I.GetEnemyDataPage();
-        labelMaster.SetMaster(dataPage, imgOutline);
+        myLabel.SetMaster(dataPage, imgOutline);
         transform.SetParent(overall);
         int countAll = myRawEnemy.personalityPool.Count() + myRawEnemy.appearancePool.Count() + myRawEnemy.internalityPool.Count();
         string[] arrayName = new string[countAll];
@@ -183,6 +191,11 @@ public class Card_Enemy : Card
             arrayName[i] = ReadCSV.I.GetInternalityElement(myRawEnemy.internalityPool[i], "name");
             arrayName[i] = ReadCSV.I.GetInternalityElement(myRawEnemy.internalityPool[i], "intro");
         }
-        labelMaster.InitMaster(arrayName, arrayIntro);
+        myLabel.InitMaster(arrayName, arrayIntro);
+    }
+
+    public void UnbindLabelPage()
+    {
+        myLabel.enabled = false;
     }
 }

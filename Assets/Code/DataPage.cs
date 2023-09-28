@@ -7,7 +7,7 @@ public class DataPage : MonoBehaviour
 {
     [SerializeField] Transform tLabelParent;
     [SerializeField] Transform tLineParent;
-    [SerializeField] Vector2[] defaultPos;
+    [SerializeField] Vector3[] defaultPos;
 
 
     Object objTag;
@@ -61,6 +61,7 @@ public class DataPage : MonoBehaviour
         lLine.Add(goLine);
 
 
+        Debug.Log(listSequence.Count);
         Sequence sequence = DOTween.Sequence();
         sequence.Append(lTag[listSequence.Count].transform.DOScale(1, 1).SetAutoKill(false));
         sequence.Join(lTag[listSequence.Count].transform.DOLocalMove(defaultPos[listSequence.Count], 1).SetAutoKill(false));
@@ -103,5 +104,45 @@ public class DataPage : MonoBehaviour
     public void SetPage(GameObject master)
     {
         goMaster = master;
+    }
+
+
+    public void OpenReward()
+    {
+        Debug.Log("OpenReward");
+        foreach (var item in goUnderCtrl)
+        {
+            item.SetActive(true);
+        }
+        foreach (var item in lTag)
+        {
+            item.transform.localScale = Vector3.zero;
+            item.transform.position=transform.position;
+            item.GetComponent<Tag>().interactable = true;
+        }
+        int rewardNum = Random.Range(1, lTag.Count);
+        Vector3[] newTagPos = new Vector3[rewardNum];
+        List<float> lAngle = new List<float>(new float[] { 0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330});
+        List<int> lRewardTag = new List<int>();
+        for (int i = 0; i < lTag.Count; i++)
+        {
+            lRewardTag.Add(i);
+        }
+        for (int i = 0; i < rewardNum; i++)
+        {
+            int rIndex=Random.Range(0,lAngle.Count);
+            float angle = lAngle[rIndex];
+            lAngle.RemoveAt(rIndex);
+            angle += Random.Range(-10.0f, 10.0f);
+            angle *= Mathf.Deg2Rad;
+            float dis = Random.Range(3f, 5.0f);
+            newTagPos[i] = new Vector3(transform.position.x + Mathf.Cos(angle) * dis, transform.position.y + Mathf.Sin(angle) * dis, 100);
+            int rRewardTagIndex=Random.Range(0,lRewardTag.Count);
+            lRewardTag.Remove(rRewardTagIndex);
+            lTag[rRewardTagIndex].transform.DOScale(1, 1);
+            lTag[rRewardTagIndex].transform.DOMove(newTagPos[i], 1);
+
+            Debug.LogWarning(newTagPos[i] + "  " + dis);
+        }
     }
 }

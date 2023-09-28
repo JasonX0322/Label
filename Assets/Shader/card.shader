@@ -16,7 +16,7 @@ Shader "Custom/card"
 		_ColorMask ("Color Mask", Float) = 15
 
 		[Toggle(UNITY_UI_ALPHACLIP)] _UseUIAlphaClip ("Use Alpha Clip", Float) = 0
-		_front("front", 2D) = "white" {}
+		[PerRendererData]_MainTex("MainTex", 2D) = "white" {}
 		_back("back", 2D) = "white" {}
 		[HideInInspector] _texcoord( "", 2D ) = "white" {}
 
@@ -94,8 +94,7 @@ Shader "Custom/card"
 			uniform fixed4 _TextureSampleAdd;
 			uniform float4 _ClipRect;
 			uniform sampler2D _MainTex;
-			uniform sampler2D _front;
-			uniform float4 _front_ST;
+			uniform float4 _MainTex_ST;
 			uniform sampler2D _back;
 			uniform float4 _back_ST;
 
@@ -120,11 +119,11 @@ Shader "Custom/card"
 
 			fixed4 frag(v2f IN , half ase_vface : VFACE ) : SV_Target
 			{
-				float2 uv_front = IN.texcoord.xy * _front_ST.xy + _front_ST.zw;
+				float2 uv_MainTex = IN.texcoord.xy * _MainTex_ST.xy + _MainTex_ST.zw;
 				float temp_output_18_0 = step( 0.5 , ase_vface );
 				float2 uv_back = IN.texcoord.xy * _back_ST.xy + _back_ST.zw;
 				
-				half4 color = ( IN.color * ( ( tex2D( _front, uv_front ) * temp_output_18_0 ) + ( tex2D( _back, uv_back ) * ( 1.0 - temp_output_18_0 ) ) ) );
+				half4 color = ( IN.color * ( ( tex2D( _MainTex, uv_MainTex ) * temp_output_18_0 ) + ( tex2D( _back, uv_back ) * ( 1.0 - temp_output_18_0 ) ) ) );
 				
 				#ifdef UNITY_UI_CLIP_RECT
                 color.a *= UnityGet2DClipping(IN.worldPosition.xy, _ClipRect);
@@ -145,12 +144,12 @@ Shader "Custom/card"
 }
 /*ASEBEGIN
 Version=18000
-0;6;1920;1133;1117.139;545.8779;1;True;True
+0;0;1920;1139;1370.139;798.8779;1;True;True
 Node;AmplifyShaderEditor.FaceVariableNode;5;-987,-18.5;Inherit;False;0;1;FLOAT;0
 Node;AmplifyShaderEditor.StepOpNode;18;-723.1393,-127.8779;Inherit;False;2;0;FLOAT;0.5;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SamplerNode;9;-451.1393,234.1221;Inherit;True;Property;_back;back;1;0;Create;True;0;0;False;0;-1;None;49d669be80d6b984680c211f3fafdb50;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;6;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
-Node;AmplifyShaderEditor.SamplerNode;8;-437.1393,-322.8779;Inherit;True;Property;_front;front;0;0;Create;True;0;0;False;0;-1;None;12f6bff6aa9a9cc44bdaa5449f30b155;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;6;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
+Node;AmplifyShaderEditor.SamplerNode;9;-451.1393,234.1221;Inherit;True;Property;_back;back;1;0;Create;True;0;0;False;0;-1;None;9b31b289587be364e973533a14082562;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;6;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.OneMinusNode;10;-375.1393,62.12213;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SamplerNode;8;-437.1393,-322.8779;Inherit;True;Property;_MainTex;MainTex;0;1;[PerRendererData];Fetch;True;0;0;False;0;-1;None;None;True;0;False;white;Auto;False;Object;-1;Auto;Texture2D;6;0;SAMPLER2D;;False;1;FLOAT2;0,0;False;2;FLOAT;0;False;3;FLOAT2;0,0;False;4;FLOAT2;0,0;False;5;FLOAT;1;False;5;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;11;-101.1393,-112.8779;Inherit;False;2;2;0;COLOR;0,0,0,0;False;1;FLOAT;0;False;1;COLOR;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;12;-110.1393,104.1221;Inherit;False;2;2;0;COLOR;0,0,0,0;False;1;FLOAT;0;False;1;COLOR;0
 Node;AmplifyShaderEditor.SimpleAddOpNode;13;127.8607,-110.8779;Inherit;False;2;2;0;COLOR;0,0,0,0;False;1;COLOR;0,0,0,0;False;1;COLOR;0
@@ -169,4 +168,4 @@ WireConnection;20;0;19;0
 WireConnection;20;1;13;0
 WireConnection;6;0;20;0
 ASEEND*/
-//CHKSM=DDC962FA637A9532B82BFBAD149940B2D515D9A5
+//CHKSM=00B62A7CA03578758517CF210E9AD95DEDA9DCF0

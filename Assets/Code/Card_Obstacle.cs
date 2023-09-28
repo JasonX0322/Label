@@ -22,6 +22,6 @@ public class Card_Obstacle : Card
 
         string spPath = BattleFieldManager.I.GetFieldNow();
         spPath = spPath + "/" + strObstacleName;
-        SetImage(Resources.Load<Texture>(spPath));
+        SetImage(Resources.Load<Sprite>(spPath));
     }
 }

@@ -7,10 +7,7 @@ using static UnityEditor.PlayerSettings;
 public class ActionContainer : MonoBehaviour
 {
     public delegate void LicenseFinish();
-    [SerializeField]
-    GameObject[] lActionem;
-    [SerializeField]
-    GameObject[] lActionDeck;
+    [SerializeField] GameObject[] lActionDeck;
     Queue<GameObject> qActionDeck;
     GameObject[] lActionHand;
     GameObject[] lActionSelected;
@@ -41,25 +38,26 @@ public class ActionContainer : MonoBehaviour
         lActionHand = new GameObject[5];
     }
 
-    public void UpdateActionContainer()
+
+    public void UpdateActionContainer(bool isEnemy,string groupName)
     {
-        Card_Enemy.rawEnemy rawEnemy = BattleManager.I.GetRawEnemyNow();
-        int nActPoint = rawEnemy.actPoint;
+        int nActPoint = 0;
+        if (isEnemy)
+            nActPoint = EnemyAI.I.ActPoint_Max;
+        else
+            nActPoint=PlayerManager.I.ActPoint_Max;
         lActionSelected=new GameObject[nActPoint];
+
+        foreach (GameObject o in lActionDeck)
+        {
+            o.GetComponent<Actionem>().InitAction(groupName);
+        }
         //TODO
     }
 
     public void FillContainer(LicenseFinish licenseFinish = null)
     {
-        Debug.Log("EnemyFillContainer");
-
-        //sequenceFillcontainer.OnComplete(() =>
-        //{
-        //    licenseFinish();
-
-        //}).Restart();
         StartCoroutine(ienuFillContainer(licenseFinish));
-
     }
 
     IEnumerator ienuFillContainer(LicenseFinish licenseFinish=null)
@@ -78,12 +76,6 @@ public class ActionContainer : MonoBehaviour
             licenseFinish();
     }
 
-    //public void FillContainer()
-    //{
-    //    Debug.Log("PlayerFillContainer");
-    //    sequenceFillcontainer.Restart();
-    //}
-
     public void AIChooseAction(int index)
     {
         Debug.Log("AIChooseAction    " + lActionSelected.Length);
@@ -93,7 +85,8 @@ public class ActionContainer : MonoBehaviour
             if (lActionSelected[i] == null)
             {
                 lActionSelected[i] = lActionHand[index];
-                lActionHand[index].transform.DOMove(myBlocks[i].position, 0.5f).OnComplete(() =>
+                lActionHand[index] = null;
+                lActionSelected[i].transform.DOMove(myBlocks[i].position, 0.5f).OnComplete(() =>
                 {
                     EnemyAI.I.ChooseAction();
                 });
@@ -179,5 +172,13 @@ public class ActionContainer : MonoBehaviour
     public GameObject[] GetLActionSelected()
     {
         return lActionSelected;
+    }
+
+    public void ClearSelectedAction()
+    {
+        for (int i = 0; i < lActionSelected.Length; i++)
+        {
+            lActionSelected[i] = null;
+        }
     }
 }

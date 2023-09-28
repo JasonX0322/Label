@@ -39,7 +39,7 @@ public class EnemyAI : Character
         ChooseAction();
     }
 
-    int _index;
+    //int _index;
     public void ChooseAction()
     {
         Debug.Log("ChooseAct      "+ActPoint_Remain);
@@ -51,6 +51,6 @@ public class EnemyAI : Character
             return;
         }
 
-        enemyActionContainer.AIChooseAction(_index++);
+        enemyActionContainer.AIChooseAction(0);
     }
 }

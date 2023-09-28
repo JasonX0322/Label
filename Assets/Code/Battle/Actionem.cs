@@ -27,17 +27,33 @@ public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler,IPo
     public enum ActionType
     {
         ATK,
-        DEF,
-        CounterATK
+        DEF
+        //CounterATK
     }
     public ActionType actionType;
-    int def;
-    int atk;
+    public int def;
+    public int atk;
+
+    public string cardName;
+
+    Image img;
+
+    Transform parentBattle;
+    Transform parentDefault;
 
     // Start is called before the first frame update
     void Start()
     {
         dir = isEnemy ? -1 : 1;
+        img = GetComponent<Image>();
+        parentBattle = BattleManager.I.parentBattle;
+        parentDefault = transform.parent;
+    }
+
+    public void InitAction(string groupName)
+    {
+        Sprite sp = Resources.Load<Sprite>("actionem/" + groupName + "/" + cardName);
+        img.sprite = sp;
     }
 
     public void Unlock()
@@ -56,8 +72,8 @@ public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler,IPo
     {
         if(bDragging)
         {
-            Debug.Log(Input.mousePosition);
-            transform.position = Input.mousePosition - mouseDis;
+            //Debug.Log(Input.mousePosition);
+            transform.position = Camera.main.ScreenToWorldPoint(Input.mousePosition) - mouseDis;
         }
     }
 
@@ -65,7 +81,7 @@ public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler,IPo
     public void FillAction(Vector3 pos, int handIndex)
     {
         Vector3 newPos = pos;
-        newPos.y += -200 * dir;
+        newPos.y += -2 * dir;
         transform.position = newPos;
         defaultPos = pos;
         nHandIndex = handIndex;
@@ -88,6 +104,7 @@ public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler,IPo
             return;
         transform.SetAsLastSibling();
         mouseDis = Input.mousePosition;
+        mouseDis=Camera.main.ScreenToWorldPoint(mouseDis);
         mouseDis = mouseDis - transform.position;
         bDragging = true;
     }
@@ -118,7 +135,7 @@ public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler,IPo
         if (!bSelected)
         {
             Vector3 newpos = defaultPos;
-            newpos.y += 100;
+            newpos.y += 0.5f;
             transform.DOMove(newpos, 0.5f);
         }
     }
@@ -195,16 +212,6 @@ public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler,IPo
                         AtkSuccessAnim(atk - other.def);
                     }
                     break;
-                case ActionType.CounterATK:
-                    if (other.def >= atk)
-                    {
-                        AtkFailAnim();
-                    }
-                    else
-                    {
-                        AtkSuccessAnim(atk - other.def);
-                    }
-                    break;
                 default:
                     break;
             }
@@ -227,34 +234,6 @@ public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler,IPo
                 case ActionType.DEF:
                     DefFailAnim();
                     break;
-                case ActionType.CounterATK:
-                    DefCounterAnim(other.atk > def);
-                    break;
-                default:
-                    break;
-            }
-        }
-        else if (actionType == ActionType.CounterATK)
-        {
-            if (other == null)
-            {
-                CounterAnim(true, other);
-                return;
-            }
-            switch (other.actionType)
-            {
-                case ActionType.ATK:
-                    CounterAnim(true, other);
-                    break;
-                case ActionType.DEF:
-                    if (other.def < atk)
-                        CounterAnim(true, other);
-                    else
-                        CounterAnim(false);
-                    break;
-                case ActionType.CounterATK:
-                    CounterAnim(true, other);
-                    break;
                 default:
                     break;
             }
@@ -267,11 +246,13 @@ public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler,IPo
 
     void AtkSuccessAnim(int damage, bool isNull = false)
     {
+        BattleManager.I.Attack(this, damage);
         Sequence sqcAtkSuccess;
+        transform.SetParent(parentBattle);
         sqcAtkSuccess = DOTween.Sequence();
-        sqcAtkSuccess.Append(transform.DOLocalMoveY(transform.localPosition.y + 100 * dir, 0.5f));
-        sqcAtkSuccess.PrependInterval(1);
-        sqcAtkSuccess.Append(GetComponent<Image>().DOFade(0, 0.5f));
+        sqcAtkSuccess.Append(transform.DOLocalMoveY(transform.localPosition.y + 400 * dir, 0.1f).SetEase(Ease.InSine));
+        sqcAtkSuccess.AppendInterval(1);
+        sqcAtkSuccess.Append(img.DOFade(0, 0.5f).OnComplete(()=>transform.SetParent(parentDefault)));
     }
 
     void AtkFailAnim()
@@ -280,43 +261,33 @@ public class Actionem : MonoBehaviour, IPointerDownHandler,IPointerUpHandler,IPo
         sqcAtkFail = DOTween.Sequence();
         sqcAtkFail.Append(transform.DOLocalMoveY(transform.localPosition.y + 50 * dir, 0.1f));
         sqcAtkFail.Append(transform.DOLocalMoveY(transform.localPosition.y - 50 * dir, 1).SetEase(Ease.OutSine));
-        sqcAtkFail.Insert(0.1f, GetComponent<Image>().DOFade(0, 1));
+        sqcAtkFail.Join(img.DOFade(0, 1));
     }
 
     void DefSuccessAnim()
     {
-        transform.DOLocalMoveY(transform.localPosition.y - 20 * dir, 0.1f);
+        Sequence sqcDefSuccess;
+        sqcDefSuccess = DOTween.Sequence();
+        sqcDefSuccess.Append(transform.DOLocalMoveY(transform.localPosition.y - 20 * dir, 0.1f));
+        sqcDefSuccess.AppendInterval(1);
+        sqcDefSuccess.Append(img.DOFade(0, 0.5f));
     }
 
     void DefFailAnim()
     {
-        transform.DOLocalMoveY(transform.localPosition.y - 20 * dir, 0.1f).OnComplete(() =>
-            GetComponent<Image>().DOFade(0, 0.5f)
-        );
+        Sequence sqcDefFail;
+        sqcDefFail = DOTween.Sequence();
+        sqcDefFail.Append(transform.DOLocalMoveY(transform.localPosition.y - 20 * dir, 0.1f));
+        sqcDefFail.Join(img.DOFade(0, 0.5f));
     }
 
-    void DefCounterAnim(bool isSuccess)
+    public delegate void TurnOverEvent();
+    public void TurnOver(TurnOverEvent turnOverEvent)
     {
-        transform.DOLocalMoveY(transform.localPosition.y, 0.1f).OnComplete(() =>
+        transform.DOLocalRotate(Vector3.zero, 0.5f).OnComplete(()=>
         {
-            if (isSuccess)
-                DefSuccessAnim();
-            else
-                DefFailAnim();
+            turnOverEvent();
         });
     }
 
-    void CounterAnim(bool isSuccess, Actionem otherAct = null)
-    {
-        transform.DOLocalMoveY(transform.localPosition.y - 20 * dir, 0.1f).SetEase(Ease.OutSine).OnComplete(() =>
-        {
-            transform.DOLocalMoveY(transform.localPosition.y + 70 * dir, 0.1f).OnComplete(() =>
-            {
-                if (isSuccess)
-                    BattleManager.I.Attack(otherAct, atk - otherAct.def);
-                else
-                    GetComponent<Image>().DOFade(0, 0.5f);
-            });
-        });
-    }
 }

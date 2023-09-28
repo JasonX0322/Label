@@ -19,6 +19,6 @@ public class Character : MonoBehaviour
     public void SubHealth(int amount)
     {
         HP_Remain-= amount;
-        myHPBar.SubHealth(HP_Max,HP_Remain);
+        myHPBar.UpdateHealth(HP_Max,HP_Remain);
     }
 }

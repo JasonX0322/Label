@@ -1,7 +1,7 @@
 ﻿using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,6 +24,8 @@ public class BattleFieldManager : MonoBehaviour
     [SerializeField] Transform tOverAll;
     [SerializeField] Transform tCardList;
 
+    public bool inBattlefield = true;
+
     void Awake()
     {
         listCard = new List<GameObject>();
@@ -39,6 +41,7 @@ public class BattleFieldManager : MonoBehaviour
         Debug.Log("BatlleFieldStart");
         InitBattleField();
     }
+
 
     /// <summary>
     /// 设置战场大小，以此设置卡牌位置
@@ -63,7 +66,7 @@ public class BattleFieldManager : MonoBehaviour
     IEnumerator ienuAddCard()
     {
 
-        Object objCard = Resources.Load<Object>("prefab/Card");
+        UnityEngine.Object objCard = Resources.Load<UnityEngine.Object>("prefab/Card");
         yield return new WaitForSeconds(1);
         for (int i = 0; i < nFieldDepth; i++)
         {
@@ -109,7 +112,17 @@ public class BattleFieldManager : MonoBehaviour
             Vector3 targetPos = new Vector3((fStartPosX + nWidthNow * fIntervalX) * (1.0f - 0.1f * nDepthNow), -Screen.height / 2 + 200 + 100 * nDepthNow, 0);
             float targetScale = Mathf.Clamp01(1.0f - 0.1f * nDepthNow);
             float taegetAlpha = Mathf.Clamp01(1.0f - 0.2f * nDepthNow);
-            card.GetComponent<Card>().MoveTo(targetPos, targetScale, taegetAlpha, interactable);
+            if (inBattlefield)
+            {
+
+                Debug.Log("DisplayAppear");
+                card.GetComponent<Card>().MoveTo(targetPos, targetScale, taegetAlpha, interactable);
+            }
+            else
+            {
+                Debug.Log("NodisplayAppear");
+                card.GetComponent<Card>().MoveTo(targetPos, 0, 0, interactable);
+            }
 
         }
 
@@ -125,14 +138,31 @@ public class BattleFieldManager : MonoBehaviour
     {
         return fieldNow;
     }
-
+    /// <summary>
+    /// 离开场地，卡牌隐藏
+    /// </summary>
+    /// <param name="exception"></param>
     public void ExitBattleField(GameObject exception)
     {
+        Debug.Log("ExitBattleField");
+        inBattlefield = false;
         for (int i = 0; i < listCard.Count; i++)
         {
             if (listCard[i] == exception)
                 continue;
             listCard[i].GetComponent<Card>().HideCard();
+        }
+    }
+
+    /// <summary>
+    /// 回到战场
+    /// </summary>
+    public void ReturnBattleField()
+    {
+        inBattlefield = true;
+        for (int i = 0; i < listCard.Count; i++)
+        {
+            listCard[i].GetComponent<Card>().HideCard();//TODO
         }
     }
 

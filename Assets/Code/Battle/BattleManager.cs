@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,6 +28,12 @@ public class BattleManager : MonoBehaviour
     [SerializeField] GameObject enemyInfo;
     [SerializeField] HPBar enemyHPBar;
 
+    GameObject goEnemy;
+
+    public Transform parentBattle;
+
+    [SerializeField] DataPage enemyDataPage;
+    [SerializeField] LabelMaster playerTagMaster;
     enum battleState
     {
         license,
@@ -45,13 +52,10 @@ public class BattleManager : MonoBehaviour
     {
     }
 
-    public void StartBattle(Card_Enemy.rawEnemy rawEnemy)
+    public void StartBattle(Card_Enemy.rawEnemy rawEnemy,GameObject go)
     {
         Debug.Log("StartBattle");
-        playerInfo.SetActive(true);
-        PlayerManager.I.myHPBar = playerHPBar;
-        enemyInfo.SetActive(true);
-        EnemyAI.I.myHPBar = enemyHPBar;
+        goEnemy = go;
         BGManager.I.SetBlack(true);
         rawEnemyNow = rawEnemy;
         stateNow = battleState.license;
@@ -73,14 +77,36 @@ public class BattleManager : MonoBehaviour
             playerBlocks[i].SetActive(true);
         }
 
-        enemyContainer.UpdateActionContainer();
-        playerContainer.UpdateActionContainer();
         EnemyAI.I.SetRawEnemy(rawEnemyNow);
-        enemyContainer.FillContainer();
-        playerContainer.FillContainer(() =>
+        enemyContainer.UpdateActionContainer(true,"person");
+        playerContainer.UpdateActionContainer(false,"taotie");
+        OpenPlayerInfo();
+        FillContainer();
+    }
+
+    /// <summary>
+    /// 打开双方数据页面，生命条
+    /// </summary>
+    void OpenPlayerInfo()
+    {
+        playerInfo.SetActive(true);
+        PlayerManager.I.myHPBar = playerHPBar;
+        playerHPBar.InitHPBar(PlayerManager.I.HP_Max, PlayerManager.I.HP_Remain);
+        enemyInfo.SetActive(true);
+        EnemyAI.I.myHPBar = enemyHPBar;
+        enemyHPBar.InitHPBar(EnemyAI.I.HP_Max, EnemyAI.I.HP_Remain);
+    }
+
+    /// <summary>
+    /// 填充手牌
+    /// </summary>
+    void FillContainer()
+    {
+        enemyContainer.FillContainer(() =>
         {
             EnemyAct();
         });
+        playerContainer.FillContainer();
     }
 
     /// <summary>
@@ -95,6 +121,7 @@ public class BattleManager : MonoBehaviour
             PlayerAct();
         });
     }
+
     /// <summary>
     /// 玩家选择
     /// </summary>
@@ -105,6 +132,7 @@ public class BattleManager : MonoBehaviour
         btnSelectFinish.interactable=true;
         playerContainer.UnlockActions();
     }
+
     /// <summary>
     /// 按钮事件,双方选择结束
     /// </summary>
@@ -128,29 +156,34 @@ public class BattleManager : MonoBehaviour
     IEnumerator ienuActionemAtk()
     {
         GameObject[] playerSelected = playerContainer.GetLActionSelected();
-        Debug.Log("player select " + playerSelected.Length + " actions");
         GameObject[] enemySelected = enemyContainer.GetLActionSelected();
-        Debug.Log("enemy select " + enemySelected.Length + " actions");
         int maxIndex = (playerSelected.Length > enemySelected.Length) ? playerSelected.Length : enemySelected.Length;
         Actionem[] playerAction = new Actionem[maxIndex];
         Actionem[] enemyAction = new Actionem[maxIndex];
         for (int i = 0; i < playerSelected.Length; i++)
         {
-            playerAction[i] = playerSelected[i].GetComponent<Actionem>();
+            if (playerSelected[i] != null)
+                playerAction[i] = playerSelected[i].GetComponent<Actionem>();
         }
         for (int i = 0; i < playerSelected.Length; i++)
         {
-            enemyAction[i] = enemySelected[i].GetComponent<Actionem>();
+            if (enemySelected[i] != null)
+                enemyAction[i] = enemySelected[i].GetComponent<Actionem>();
         }
         for (int i = 0; i < maxIndex; i++)
         {
-            if (playerAction[i] != null)
-                playerAction[i].ActionCollision(enemyAction[i]);
-            if (enemyAction[i] != null)
-                enemyAction[i].ActionCollision(playerAction[i]);
+            enemyAction[i].TurnOver(() =>
+            {
+                if (playerAction[i] != null)
+                    playerAction[i].ActionCollision(enemyAction[i]);
+                if (enemyAction[i] != null)
+                    enemyAction[i].ActionCollision(playerAction[i]);
+            });
             yield return new WaitForSeconds(1);
         }
-
+        Debug.Log("ienuActionemAtk finish");
+        playerContainer.ClearSelectedAction();
+        enemyContainer.ClearSelectedAction();
         Determin();
     }
 
@@ -169,32 +202,77 @@ public class BattleManager : MonoBehaviour
         {
             BattleSuccess();
         }
+        else
+        {
+            Debug.Log("Game continue");
+            FillContainer();
+        }
     }
 
     [SerializeField] GameObject pageGameFail;
     void BattleFail()
     {
+        Debug.Log("Game fail");
         pageGameFail.SetActive(true);
     }
 
     void BattleSuccess()
     {
+        Debug.Log("Game success");
+        ShowReward();
 
+
+    }
+    /// <summary>
+    /// 获胜后选择获取
+    /// </summary>
+    void ShowReward()
+    {
+        goEnemy.transform.SetParent(BattleFieldManager.I.GetOverAll());
+        goEnemy.GetComponent<Card_Enemy>().UnbindLabelPage();
+        goEnemy.transform.DOLocalMove(Vector3.zero, 1).OnComplete(() =>
+        {
+            enemyDataPage.OpenReward();
+        });
+    }
+    /// <summary>
+    /// 选取结束，关闭奖励，下一层
+    /// </summary>
+    [SerializeField] ParticleSystem particleReward;
+    void CloseReward()
+    {
+        particleReward.Play();
+        enemyDataPage.ClosePage();
+        goEnemy.GetComponent<Image>().DOFillAmount(0, 1);
+        particleReward.transform.localPosition = new Vector3(0, -1.1f, 0);
+        particleReward.transform.DOLocalMoveY(1.1f, 1).OnComplete(() => particleReward.Stop());
+        //TODO
     }
 
     /// <summary>
-    /// 
+    /// 攻击，造成伤害
     /// </summary>
-    /// <param name="action">目标</param>
+    /// <param name="damageSource">目标</param>
     /// <param name="damage">伤害</param>
-    public void Attack(Actionem action,int damage)
+    public void Attack(Actionem damageSource,int damage)
     {
+        Character target;
+        if (damageSource.isEnemy)
+            target = PlayerManager.I;
+        else
+            target = EnemyAI.I;
 
+        target.SubHealth(damage);
     }
 
     public Card_Enemy.rawEnemy GetRawEnemyNow()
     {
         return rawEnemyNow;
+    }
+
+    public void SelectRewardTag(LabelMaster.TagInfo tagInfo)
+    {
+        playerTagMaster.AddTag(tagInfo);
     }
 
 

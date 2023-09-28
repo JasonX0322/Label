@@ -9,19 +9,33 @@ public class LabelMaster : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     [SerializeField] GameObject goDataPage;
     [SerializeField] Image imgOutline;
 
+    public struct TagInfo
+    {
+        public string tagName;
+        public string tagIntro;
+    }
+
+    List<TagInfo> myTags = new List<TagInfo>();
+
     bool bLocked = false;
     // Start is called before the first frame update
     void Start()
     {
     }
 
-    public void InitMaster(string[] labelName, string[] labelIntro)
+    public void InitMaster(string[] tagName, string[] tagIntro)
     {
-        if (labelName.Length != labelIntro.Length)
+        if (tagName.Length != tagIntro.Length)
             Debug.LogError("标签数量有误");
-        for(int i = 0; i < labelName.Length; i++)
+
+
+        for (int i = 0; i < tagName.Length; i++)
         {
-            goDataPage.GetComponent<DataPage>().AddLabel(labelName[i], labelIntro[i]);
+            TagInfo newtag = new TagInfo();
+            newtag.tagName = tagName[i];
+            newtag.tagIntro = tagIntro[i];
+            myTags.Add(newtag);
+            goDataPage.GetComponent<DataPage>().AddLabel(tagName[i], tagIntro[i]);
         }
     }
 
@@ -53,5 +67,11 @@ public class LabelMaster : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         goDataPage = page;
         imgOutline = outline;
         goDataPage.GetComponent<DataPage>().SetPage(this.gameObject);
+    }
+
+    public void AddTag(TagInfo tagInfo)
+    {
+        myTags.Add(tagInfo);
+        goDataPage.GetComponent<DataPage>().AddLabel(tagInfo.tagName, tagInfo.tagIntro);
     }
 }

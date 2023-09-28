@@ -1,6 +1,7 @@
 ﻿using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,14 +14,15 @@ public class HPBar : MonoBehaviour
     {
         
     }
-
-    void OnEnable()
+    public void InitHPBar(int HPMax, int HPRemain)
     {
+        float HPRate = (float)HPRemain / (float)HPMax;
         fill.fillAmount = 0;
-        fill.DOFillAmount(1, 2);
+        fill.DOFillAmount(HPRate, 2);
+        txt.text = HPRemain.ToString() + "/" + HPMax.ToString();
     }
 
-    public void SubHealth(int HPMax,int HPRemain)
+    public void UpdateHealth(int HPMax,int HPRemain)
     {
         float HPRate=(float)HPRemain/(float)HPMax;
         fill.DOFillAmount(HPRate, 1);

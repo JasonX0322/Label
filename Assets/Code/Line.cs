@@ -30,7 +30,7 @@ public class Line : MonoBehaviour
         if(startPos!=null)
         {
             float dis=Vector3.Distance(endPos.transform.position,startPos.transform.position);
-            rect.sizeDelta = new Vector2(5, dis);
+            rect.sizeDelta = new Vector2(0.05f, dis);
 
             transform.position = startPos.transform.position;
 

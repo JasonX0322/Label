@@ -21,6 +21,6 @@ public class Card_Food : Card
 
         string spPath = BattleFieldManager.I.GetFieldNow();
         spPath = spPath + "/" + strFoodName;
-        SetImage(Resources.Load<Texture>(spPath));
+        SetImage(Resources.Load<Sprite>(spPath));
     }
 }

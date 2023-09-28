@@ -6,6 +6,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+public delegate void TurnOverEvent();
+
 public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     [SerializeField] Image imgCard;
@@ -35,28 +37,27 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     /// <summary>
     /// 卡牌移动
     /// </summary>
-    public void MoveTo(Vector3 pos,float scale,float alpha,bool interactable=false)
+    public void MoveTo(Vector3 pos,float scale,float alpha,bool _interactable=false)
     {
         transform.localScale = Vector3.zero;
         imgCard.color = new Color(1, 1, 1, 0);
         transform.SetAsFirstSibling();
         transform.localPosition = pos;
-        transform.DOScale(scale, 1);
-        imgCard.DOFade(alpha, 1);
-
-        SetInteractable(interactable);
+        transform.DOScale(scale, 0.5f);
+        imgCard.DOFade(alpha, 0.5f);
+        SetInteractable(_interactable);
     }
     /// <summary>
     /// 翻面
     /// </summary>
-    public void TurnOver()
+    public void TurnOver(TurnOverEvent turnOverEvent)
     {
-        transform.DORotate(Vector3.zero, 0.5f).OnComplete(() => ClickEvent());
+        transform.DORotate(Vector3.zero, 0.5f).OnComplete(() => turnOverEvent());
     }
 
-    public void SetImage(Texture tex)
+    public void SetImage(Sprite sp)
     {
-        matCard.SetTexture("_front", tex);
+        imgCard.sprite = sp;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -78,7 +79,8 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     {
         if (!interactable)
             return;
-        TurnOver();
+
+        ClickEvent();
     }
 
     public void SetInteractable(bool b)
@@ -89,8 +91,14 @@ public class Card : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IP
     public void HideCard()
     {
         interactable = false;
-        if (imgCard.color.a != 0)
-            imgCard.DOFade(0, 0.1f);
+        imgOutline.enabled = false;
+        imgCard.DOFade(0, 0.5f);
+    }
+
+    public void ShowCard()
+    {
+        interactable = true;
+        imgCard.DOFade(1, 0.5f);
     }
 
 }
